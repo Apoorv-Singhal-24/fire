@@ -6,8 +6,8 @@
 
 <!-- ── PRIMARY SEO ─────────────────────────────────────────────── -->
 <title>ZipZap Games — Free Multiplayer Party Games Online</title>
-<meta name="description" content="Play free multiplayer party games with friends online. BLITZ: name something in a category first. PSYCH: fool your friends with fake answers. BLUFF: the classic lying card game. CABO: the low-score memory card game. PICTIONARY: real-time draw & guess. TYPE: a typing speed race. EXPLODING KITTENS: the cute chaotic card game — solo or in a room. SUMO SMASH: mash to shove your rival out of the ring. HIPPO CHOMP: tap your hippo's mouth to gobble your colour before your rival. Plus BASKETBALL and SKYSCRAPERS: solo arcade games. No download needed — play instantly in your browser.">
-<meta name="keywords" content="multiplayer party game online, free browser game, word game with friends, bluffing game, psych game, blitz word game, bluff card game, cheat card game online, cabo card game online, exploding kittens online, exploding kittens free, pictionary online, drawing and guessing game, typing race game, typing speed test, basketball game online, free basketball shooting game, skyscraper stacking game, tower block game online, stack game, hungry hippos game online, hippo game, tap game, hippo chomp, sumo game online, sumo tap battle, tap battle game, online party game, game to play with friends, no download game">
+<meta name="description" content="Play free multiplayer party games with friends online. BLITZ: name something in a category first. PSYCH: fool your friends with fake answers. BLUFF: the classic lying card game. CABO: the low-score memory card game. PICTIONARY: real-time draw & guess. TYPE: a typing speed race. EXPLODING KITTENS: the cute chaotic card game — solo or in a room. SUMO SMASH: mash to shove your rival out of the ring. HIPPO CHOMP: tap your hippo's mouth to gobble your colour before your rival. Plus BASKETBALL, SKYSCRAPERS and SKYSCRAPER 2: solo arcade games. No download needed — play instantly in your browser.">
+<meta name="keywords" content="multiplayer party game online, free browser game, word game with friends, bluffing game, psych game, blitz word game, bluff card game, cheat card game online, cabo card game online, exploding kittens online, exploding kittens free, pictionary online, drawing and guessing game, typing race game, typing speed test, basketball game online, free basketball shooting game, skyscraper stacking game, tower block game online, stack game, crane stacking game, build a tower game,hungry hippos game online, hippo game, tap game, hippo chomp, sumo game online, sumo tap battle, tap battle game, online party game, game to play with friends, no download game">
 <meta name="author" content="ZipZap Games">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://zipzap-games.com/">
@@ -190,6 +190,19 @@
         "url": "https://zipzap-games.com",
         "genre": "Arcade Game",
         "numberOfPlayers": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 2 },
+        "gamePlatform": "Web Browser"
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 12,
+      "item": {
+        "@type": "Game",
+        "name": "Skyscraper 2",
+        "description": "A crane-drop tower stacking game. A crane swings a same-size block back and forth; tap to drop it onto the tower and line it up for a stable build. Dead-centre drops score a perfect with a combo bonus, a flat roof caps off each building, and overhanging too far topples the tower. Play solo to beat the platform-wide high score.",
+        "url": "https://zipzap-games.com",
+        "genre": "Arcade Game",
+        "numberOfPlayers": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 1 },
         "gamePlatform": "Web Browser"
       }
     }
@@ -533,6 +546,8 @@ body.typing-mode #app{max-width:960px}
     <p>A free single-player basketball shooting game. Drag to aim, release to shoot, and thread the rim from a new spot every time you score. Chase your best streak with 12 ball skins. <a href="/hoops/" style="color:#E8622C">Play Basketball Shootout</a>.</p>
     <h2 style="color:#7EC8FF;margin-top:24px">SKYSCRAPERS — Block Stacking Tower Game</h2>
     <p>A free single-player skyscraper stacking game (the classic phone stacker). A crane carries each block — tap to drop it and build the tower as high as you can. Perfect drops keep it wide; misses trim it down. <a href="/skyscrapers/" style="color:#7EC8FF">Play Skyscrapers</a>.</p>
+    <h2 style="color:#6C8BFF;margin-top:24px">SKYSCRAPER 2 — Crane-Drop Tower Builder</h2>
+    <p>A free single-player crane-drop tower stacking game. A crane swings a same-size block back and forth — tap to drop it onto the tower and line it up for a stable build. Dead-centre drops score a perfect with a combo bonus, a flat roof caps each building, and overhanging too far topples the tower. Beat the platform-wide high score. 1 player.</p>
     <p style="margin-top:24px">Enable JavaScript to play at <strong>zipzap-games.com</strong></p>
   </div>
 </noscript>
@@ -4581,6 +4596,308 @@ function bindHippo(){
 }
 
 // ═══════════════════════════════════════════════════════
+// SKYSCRAPER 2  (crane-drop tower stacker — tap to drop)
+//   Same-size blocks swing on a crane; tap to drop onto the
+//   tower. Line them up for a stable tower; a flat roof caps
+//   each building. Overhang too far and it topples. Solo high
+//   score (platform-wide, Firebase) + local best.
+// ═══════════════════════════════════════════════════════
+const SK2_BESTKEY="zz_sky2_best";
+const SK2_PALS=[
+  {b:"#5B8DEF",d:"#3A66C0"},{b:"#7C6BEF",d:"#5647C0"},{b:"#EF7C9B",d:"#C0566F"},
+  {b:"#3FB7A6",d:"#2A8678"},{b:"#F0A24E",d:"#C47B2E"},{b:"#59B65B",d:"#3C8A3E"}
+];
+let SK2_phase="ready";            // ready | play | over
+let SK2_W=340, SK2_H=380, SK2_dpr=1, SK2_cv=null, SK2_ctx=null, SK2_raf=null, SK2_last=0;
+let SK2_BW=92, SK2_BH=28, SK2_GROUND=340, SK2_TOPLINE=175, SK2_craneY=36, SK2_craneBottom=98;
+let SK2_amp=120, SK2_swingPhase=0, SK2_swingSpeed=0.05;
+let SK2_blocks=[], SK2_drop=null, SK2_floors=0, SK2_score=0, SK2_combo=0;
+let SK2_floorInBldg=0, SK2_bldgFloors=6, SK2_palIdx=0;
+let SK2_scrollDisp=0, SK2_msg="", SK2_msgAt=0, SK2_shake=0, SK2_startAt=0;
+let SK2_best=0, SK2_hs={score:0,name:""}, SK2_recordPending=false;
+let SK2_fallers=[], SK2_keyHandler=null, SK2_overAt=0;
+
+function SK2_sfx(kind){try{const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);const t=c.currentTime;
+  if(kind==="perfect"){o.type="square";o.frequency.setValueAtTime(680,t);o.frequency.exponentialRampToValueAtTime(1150,t+.12);}
+  else if(kind==="drop"){o.type="sine";o.frequency.setValueAtTime(420,t);o.frequency.exponentialRampToValueAtTime(240,t+.1);}
+  else if(kind==="roof"){o.type="triangle";o.frequency.setValueAtTime(520,t);o.frequency.exponentialRampToValueAtTime(880,t+.16);}
+  else{o.type="sawtooth";o.frequency.setValueAtTime(240,t);o.frequency.exponentialRampToValueAtTime(70,t+.3);}
+  g.gain.setValueAtTime(.05,t);g.gain.exponentialRampToValueAtTime(.001,t+(kind==="over"?.32:.18));o.start(t);o.stop(t+.33);}catch(e){}}
+
+function SK2_screenBottom(i){ return SK2_GROUND - i*SK2_BH + SK2_scrollDisp; }
+function SK2_winPattern(roof){ const n=roof?0:3; const a=[]; for(let i=0;i<n;i++)a.push(Math.random()<0.55); return a; }
+
+function SK2_spawnDrop(){
+  const roof = SK2_floorInBldg>=SK2_bldgFloors;
+  SK2_drop={cx:SK2_W/2, by:SK2_craneBottom, vy:0, state:"swing", roof, win:SK2_winPattern(roof), pal:SK2_PALS[SK2_palIdx%SK2_PALS.length]};
+  SK2_swingPhase=Math.random()*Math.PI*2;
+}
+function SK2_release(){
+  if(SK2_phase!=="play"||!SK2_drop||SK2_drop.state!=="swing")return;
+  SK2_drop.state="fall"; SK2_drop.vy=3.2; SK2_sfx("drop");
+}
+function SK2_place(){
+  const d=SK2_drop, top=SK2_blocks[SK2_blocks.length-1];
+  const off=d.cx-top.cx, aoff=Math.abs(off);
+  if(aoff > SK2_BW*0.64){                // hangs too far → topples off
+    SK2_fallers.push({cx:d.cx, by:d.by, vy:d.vy, vx:(off>0?3:-3), rot:0, vr:(off>0?0.12:-0.12), roof:d.roof, win:d.win, pal:d.pal});
+    SK2_gameOver(); return;
+  }
+  const perfect = aoff<=7;
+  const cx = perfect? top.cx : d.cx;
+  SK2_blocks.push({cx, roof:d.roof, win:d.win, pal:d.pal});
+  SK2_floors++;
+  SK2_shake=Math.min(1, aoff/SK2_BW + (d.roof?0.2:0));
+  if(d.roof){
+    SK2_score+=100; SK2_combo=0; SK2_msg="🏙️ BUILDING DONE! +100"; SK2_sfx("roof");
+    try{zzFireworks(false);}catch(e){}
+    SK2_floorInBldg=0; SK2_palIdx++;
+  }else{
+    SK2_score+=10;
+    if(perfect){ SK2_combo++; const bonus=10+SK2_combo*4; SK2_score+=bonus; SK2_msg="PERFECT! +"+(10+bonus); SK2_sfx("perfect"); }
+    else { SK2_combo=0; SK2_msg="+10"; }
+    SK2_floorInBldg++;
+  }
+  SK2_msgAt=ms();
+  SK2_swingSpeed=Math.min(0.12, 0.05 + SK2_floors*0.0016);
+  SK2_drop=null;
+  SK2_spawnDrop();
+}
+function SK2_gameOver(){
+  SK2_phase="over"; SK2_drop=null; SK2_overAt=ms(); SK2_sfx("over");
+  if(SK2_score>SK2_best){ SK2_best=SK2_score; try{localStorage.setItem(SK2_BESTKEY,String(SK2_best));}catch(e){} }
+  if(SK2_score>(SK2_hs.score||0)) SK2_recordPending=true;
+  setTimeout(()=>{ if(SK2_phase==="over")render(); }, 900);  // let the block tumble a moment
+}
+
+// ── global high score ──
+function SK2_loadHigh(){
+  try{ SK2_best=parseInt(localStorage.getItem(SK2_BESTKEY)||"0",10)||0; }catch(e){}
+  try{ db.ref("sky2/high").once("value").then(s=>{ const v=s.val(); if(v&&typeof v.score==="number"){ SK2_hs=v; if(SK2_phase==="ready"||SK2_phase==="over")render(); } }).catch(()=>{}); }catch(e){}
+}
+function SK2_saveRecord(name){
+  const sc=SK2_score, nm=(name||"Anonymous").slice(0,18);
+  SK2_hs={score:sc,name:nm}; SK2_recordPending=false;
+  try{ db.ref("sky2/high").transaction(cur=>{ if(!cur||typeof cur.score!=="number"||sc>=cur.score)return {score:sc,name:nm}; return cur; }).catch(()=>{}); }catch(e){}
+  toast("🏆 New platform record saved!","ok"); render();
+}
+
+// ── loop ──
+function SK2_loop(now){
+  if(!SK2_ctx){SK2_raf=null;return;}
+  const dt=Math.min(50,now-SK2_last); SK2_last=now; const dtf=dt/16.67;
+  // camera ease
+  const target=Math.max(0, SK2_blocks.length*SK2_BH - (SK2_GROUND-SK2_TOPLINE));
+  SK2_scrollDisp += (target-SK2_scrollDisp)*Math.min(1,0.2*dtf);
+  SK2_shake*=Math.pow(0.86,dtf);
+  // swing / fall
+  if(SK2_phase==="play" && SK2_drop){
+    if(SK2_drop.state==="swing"){
+      SK2_swingPhase+=SK2_swingSpeed*dtf;
+      SK2_drop.cx=SK2_W/2 + SK2_amp*Math.sin(SK2_swingPhase);
+      SK2_drop.by=SK2_craneBottom;
+    }else{
+      SK2_drop.vy+=0.9*dtf; SK2_drop.by+=SK2_drop.vy*dtf;
+      const landing=SK2_screenBottom(SK2_blocks.length);
+      if(SK2_drop.by>=landing){ SK2_drop.by=landing; SK2_place(); }
+    }
+  }
+  // tumbling faller (on game over)
+  for(const f of SK2_fallers){ f.vy+=0.9*dtf; f.by+=f.vy*dtf; f.cx+=f.vx*dtf; f.rot+=f.vr*dtf; }
+  SK2_draw();
+  SK2_raf=requestAnimationFrame(SK2_loop);
+}
+
+// ── drawing ──
+function SK2_skyCol(){
+  // sky deepens with height
+  const h=Math.min(1, SK2_floors/60);
+  const top=[135-h*70,205-h*95,255-h*70], bot=[220-h*40,242-h*30,255-h*20];
+  return [`rgb(${top[0]|0},${top[1]|0},${top[2]|0})`,`rgb(${bot[0]|0},${bot[1]|0},${bot[2]|0})`];
+}
+function SK2_block(cx,bottom,blk,ghost){
+  const c=SK2_ctx, x=cx-SK2_BW/2, y=bottom-SK2_BH, w=SK2_BW, h=SK2_BH;
+  c.save(); if(ghost)c.globalAlpha=0.9;
+  // body
+  c.fillStyle=blk.pal.b; c.beginPath(); c.rect(x,y,w,h); c.fill();
+  c.fillStyle=blk.pal.d; c.fillRect(x,bottom-5,w,5);             // shaded base
+  c.fillStyle="rgba(255,255,255,.14)"; c.fillRect(x,y,w,4);      // top highlight
+  if(blk.roof){
+    // flat penthouse rim + a short antenna
+    c.fillStyle=blk.pal.d; c.fillRect(x-3,y-5,w+6,6);
+    c.fillStyle="#2b3550"; c.fillRect(cx+w*0.28,y-16,3,12);
+    c.fillStyle="#FF5A5A"; c.beginPath(); c.arc(cx+w*0.28+1.5,y-16,2.4,0,6.28); c.fill();
+  }else{
+    // windows
+    const cols=blk.win.length||3, gap=w/(cols+1);
+    for(let i=0;i<cols;i++){ const wx=x+gap*(i+1)-5, wy=y+h*0.32;
+      c.fillStyle=blk.win[i]?"#FFE066":"rgba(10,20,40,.35)"; c.fillRect(wx,wy,10,h*0.4); }
+  }
+  c.strokeStyle="rgba(0,0,0,.18)"; c.lineWidth=1; c.strokeRect(x+.5,y+.5,w-1,h-1);
+  c.restore();
+}
+function SK2_draw(){
+  const c=SK2_ctx; const sx=(Math.random()-0.5)*SK2_shake*6;
+  c.save(); c.translate(sx,0);
+  // sky
+  const [t,b]=SK2_skyCol(); const g=c.createLinearGradient(0,0,0,SK2_H);
+  g.addColorStop(0,t); g.addColorStop(1,b); c.fillStyle=g; c.fillRect(-10,0,SK2_W+20,SK2_H);
+  // sun + clouds (simple, static-ish)
+  c.fillStyle="rgba(255,244,190,.85)"; c.beginPath(); c.arc(SK2_W-38,54,20,0,6.28); c.fill();
+  c.fillStyle="rgba(255,255,255,.85)";
+  const cl=[[SK2_W*0.26,78,15],[SK2_W*0.62,120,11]];
+  for(const[cx,cy,s]of cl){ c.beginPath(); c.arc(cx,cy,s,0,6.28); c.arc(cx+s,cy+3,s*0.8,0,6.28); c.arc(cx-s,cy+3,s*0.75,0,6.28); c.fill(); }
+  // ground (only when near bottom)
+  const gb=SK2_screenBottom(0);
+  if(gb<SK2_H+40){ c.fillStyle="#6b7a90"; c.fillRect(-10,gb,SK2_W+20,SK2_H-gb+10);
+    c.fillStyle="#55637a"; c.fillRect(-10,gb,SK2_W+20,4); }
+  // placed blocks
+  for(let i=0;i<SK2_blocks.length;i++){ const bb=SK2_screenBottom(i);
+    if(bb<-SK2_BH||bb>SK2_H+SK2_BH)continue; SK2_block(SK2_blocks[i].cx,bb,SK2_blocks[i]); }
+  // crane + current drop
+  if(SK2_phase==="play"&&SK2_drop){
+    // rail
+    c.fillStyle="#394a63"; c.fillRect(-10,SK2_craneY-4,SK2_W+20,6);
+    // trolley + cable
+    c.fillStyle="#2b3a52"; c.fillRect(SK2_drop.cx-9,SK2_craneY-8,18,10);
+    c.strokeStyle="rgba(20,30,50,.8)"; c.lineWidth=2; c.beginPath(); c.moveTo(SK2_drop.cx,SK2_craneY); c.lineTo(SK2_drop.cx,SK2_drop.by-SK2_BH); c.stroke();
+    SK2_block(SK2_drop.cx, SK2_drop.by, SK2_drop);
+    // drop guide line
+    if(SK2_drop.state==="swing"){ c.strokeStyle="rgba(255,255,255,.35)"; c.setLineDash([4,6]); c.lineWidth=2;
+      c.beginPath(); c.moveTo(SK2_drop.cx,SK2_drop.by+2); c.lineTo(SK2_drop.cx, SK2_screenBottom(SK2_blocks.length)); c.stroke(); c.setLineDash([]); }
+  }
+  // tumbling faller
+  for(const f of SK2_fallers){ c.save(); c.translate(f.cx,f.by-SK2_BH/2); c.rotate(f.rot); SK2_block(0,SK2_BH/2,f); c.restore(); }
+  c.restore();
+  // HUD
+  c.save(); c.textBaseline="middle";
+  c.font="900 30px Righteous,Nunito,sans-serif"; c.textAlign="center"; c.fillStyle="#fff";
+  c.strokeStyle="rgba(10,25,50,.5)"; c.lineWidth=5; c.strokeText(String(SK2_score),SK2_W/2,40); c.fillText(String(SK2_score),SK2_W/2,40);
+  c.font="900 12px Nunito,sans-serif"; c.fillStyle="rgba(255,255,255,.9)";
+  c.fillText("Floor "+SK2_floors+" · Best "+Math.max(SK2_best,SK2_score),SK2_W/2,62);
+  if(SK2_msg&&ms()-SK2_msgAt<900){ const e=(ms()-SK2_msgAt)/900; c.globalAlpha=1-e;
+    c.font="900 20px Righteous,Nunito,sans-serif"; c.fillStyle=SK2_msg[0]==="P"?"#FFE066":SK2_msg[0]==="🏙"?"#9BE8FF":"#fff";
+    c.fillText(SK2_msg,SK2_W/2, SK2_TOPLINE-50-e*18); }
+  c.restore();
+  // start hint
+  if(SK2_phase==="play"&&SK2_floors<=1&&ms()-SK2_startAt<3200){ c.save(); c.globalAlpha=0.9; c.textAlign="center";
+    c.font="900 15px Nunito,sans-serif"; c.fillStyle="#fff"; c.fillText("TAP to drop the block 👇", SK2_W/2, SK2_H-24); c.restore(); }
+}
+
+// ── screens ──
+function SK2_scrReady(){
+  const best=SK2_hs.score>0?`🏆 Platform best: <b style="color:#FFD23F">${SK2_hs.score}</b>${SK2_hs.name?" by "+SK2_hs.name:""}`:"Be the first to set a platform record!";
+  const yb=SK2_best>0?`<div style="color:var(--mu);font-size:12px;margin-top:4px">Your best: ${SK2_best}</div>`:"";
+  return `
+<div class="fade" style="padding-top:20px">
+  <button class="btn" id="sk2-back" style="background:var(--ca2);color:var(--mu);border:1px solid var(--bd);width:auto;padding:8px 16px;font-size:13px;margin-bottom:22px">← Back</button>
+  <div style="text-align:center;margin-bottom:24px">
+    <div style="font-size:40px">🏙️</div>
+    <div class="hf" style="font-size:38px;color:#6C8BFF;letter-spacing:1px;line-height:1;text-shadow:0 0 50px rgba(108,139,255,.45)">SKYSCRAPER 2</div>
+    <div style="color:var(--mu);margin-top:8px;font-size:14px">The crane swings a block — <b>tap</b> to drop it 🏗️</div>
+    <div style="color:var(--te);margin-top:10px;font-size:13px;font-weight:800">${best}</div>${yb}
+  </div>
+  <div class="card" style="margin-bottom:18px;font-size:13px;color:var(--mu);line-height:1.7">
+    <b style="color:var(--te)">How to play</b><br>
+    • Tap (or press Space) to drop the swinging block.<br>
+    • Line it up — <b style="color:#FFE066">dead-centre = PERFECT</b> & combo bonus.<br>
+    • Keep the tower stable; overhang too far and it topples.<br>
+    • Every ${SK2_bldgFloors} floors you drop a <b style="color:#9BE8FF">roof</b> to finish a building 🏙️
+  </div>
+  <button class="btn" id="sk2-start" style="background:#6C8BFF;color:#06122e;font-size:18px;padding:16px">▲ Start Building</button>
+</div>`;}
+
+function SK2_scrGame(){
+  return `
+<div class="fade" style="padding-top:12px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <button class="btn" id="sk2-back" style="background:var(--ca2);color:var(--mu);border:1px solid var(--bd);width:auto;padding:7px 13px;font-size:12px">← Quit</button>
+    <div style="font-weight:900;color:var(--mu);font-size:13px">Tap anywhere to drop</div>
+  </div>
+  <div id="sk2-arena" style="border-radius:22px;overflow:hidden;line-height:0;box-shadow:0 10px 30px rgba(0,0,0,.4);cursor:pointer">
+    <canvas id="sk2-cv" style="display:block;width:100%;touch-action:none"></canvas>
+  </div>
+  <button class="btn" id="sk2-drop" style="background:linear-gradient(135deg,#6C8BFF,#8AA4FF);color:#06122e;font-size:19px;font-weight:900;padding:16px;margin-top:10px;box-shadow:0 6px 0 #3f58b0">▼ DROP</button>
+</div>`;}
+
+function SK2_scrOver(){
+  const rec=SK2_recordPending;
+  setTimeout(()=>{try{playSfx(rec?"win":"fool");}catch(e){} if(rec)try{zzWin("sky2-rec",true);}catch(e){}},160);
+  const recordInput = rec
+    ? `<div class="card" style="margin:18px 0"><span class="lbl">New platform record! Add your name</span>
+         <div class="row"><input class="inp" id="sk2-name" placeholder="Your name" maxlength="18" value="${(myName||'').replace(/"/g,'')}" style="flex:1;border-color:#FFD23F">
+         <button class="btn" id="sk2-save" style="background:#FFD23F;color:#3a2a00;width:auto;padding:12px 18px;flex-shrink:0">Save 🏆</button></div></div>`
+    : "";
+  return `
+<div class="fade" style="padding-top:36px;text-align:center">
+  ${ZZ_HOMEBTN}
+  <div style="font-size:58px;margin-bottom:2px">${rec?"🏆":"🏙️"}</div>
+  <div class="hf" style="font-size:30px;color:#6C8BFF;text-shadow:0 0 40px rgba(108,139,255,.4)">${rec?"NEW RECORD!":"Timber!"}</div>
+  <div style="margin-top:14px"><div class="hf" style="font-size:56px;color:#6C8BFF">${SK2_score}</div>
+    <div style="color:var(--mu);font-size:13px;margin-top:2px">${SK2_floors} floors · your best ${SK2_best}</div>
+    <div style="color:var(--te);font-size:13px;font-weight:800;margin-top:8px">🏆 Platform best: ${SK2_hs.score||0}${SK2_hs.name?" by "+SK2_hs.name:""}</div></div>
+  ${recordInput}
+  <div style="margin-top:24px">
+    <button class="btn" id="sk2-again" style="background:#6C8BFF;color:#06122e;font-size:17px;padding:15px;margin-bottom:12px">🔁 Play Again</button>
+    <button class="btn" id="sk2-menu" style="background:var(--ca2);color:var(--te);border:1px solid var(--bd);font-size:15px;padding:13px">Back to start</button>
+  </div>
+</div>`;}
+
+// ── lifecycle ──
+function SK2_start(){
+  SK2_teardown();
+  SK2_blocks=[]; SK2_fallers=[]; SK2_score=0; SK2_floors=1; SK2_combo=0;
+  SK2_floorInBldg=0; SK2_palIdx=0; SK2_scrollDisp=0; SK2_msg=""; SK2_recordPending=false;
+  SK2_blocks.push({cx:SK2_W/2, roof:false, win:SK2_winPattern(false), pal:SK2_PALS[0]});
+  SK2_phase="play"; SK2_startAt=ms();
+  SK2_spawnDrop();
+  render();
+}
+function SK2_teardown(){
+  if(SK2_raf){cancelAnimationFrame(SK2_raf);SK2_raf=null;}
+  if(SK2_keyHandler){document.removeEventListener("keydown",SK2_keyHandler);SK2_keyHandler=null;}
+  try{zzStopFireworks();}catch(e){}
+  SK2_ctx=null; SK2_cv=null;
+}
+function renderSkyscraper2(){
+  const app=document.getElementById("app"); if(!app)return;
+  if(SK2_phase==="ready") app.innerHTML=SK2_scrReady();
+  else if(SK2_phase==="over") app.innerHTML=SK2_scrOver();
+  else app.innerHTML=SK2_scrGame();
+  bindSkyscraper2();
+}
+function bindSkyscraper2(){
+  const $=id=>document.getElementById(id),on=(id,fn)=>{const el=$(id);if(el)el.onclick=fn;};
+  on("sk2-back",()=>{ if(SK2_phase==="play"){ SK2_teardown(); SK2_phase="ready"; render(); } else { SK2_teardown(); SK2_phase="ready"; currentGame=null; gs=null; render(); } });
+  on("sk2-start",()=>SK2_start());
+  on("sk2-again",()=>SK2_start());
+  on("sk2-menu",()=>{ SK2_teardown(); SK2_phase="ready"; render(); });
+  on("sk2-save",()=>{ SK2_saveRecord($("sk2-name")?.value.trim()); });
+  if(SK2_phase==="ready"){ SK2_loadHigh(); }
+
+  const cv=$("sk2-cv");
+  if(cv){
+    SK2_cv=cv; const arena=$("sk2-arena");
+    SK2_W=Math.round(arena.clientWidth||340);
+    const vh=window.innerHeight||700;
+    SK2_H=Math.round(Math.max(380,Math.min(SK2_W*1.35, vh*0.6)));
+    SK2_dpr=Math.min(2,window.devicePixelRatio||1);
+    cv.width=SK2_W*SK2_dpr; cv.height=SK2_H*SK2_dpr; cv.style.height=SK2_H+"px";
+    SK2_ctx=cv.getContext("2d"); SK2_ctx.setTransform(SK2_dpr,0,0,SK2_dpr,0,0);
+    SK2_BW=Math.round(Math.max(68,Math.min(120,SK2_W*0.27)));
+    SK2_BH=28; SK2_GROUND=SK2_H-40; SK2_TOPLINE=Math.round(SK2_H*0.46);
+    SK2_craneY=34; SK2_craneBottom=96; SK2_amp=SK2_W/2-SK2_BW/2-8;
+    const tap=e=>{ e.preventDefault(); SK2_release(); };
+    arena.onpointerdown=tap;
+    const db2=$("sk2-drop"); if(db2)db2.onpointerdown=tap;
+    SK2_keyHandler=e=>{ if(e.code==="Space"||e.key===" "||e.key==="Enter"){ e.preventDefault(); SK2_release(); } };
+    document.addEventListener("keydown",SK2_keyHandler);
+    if(SK2_raf)cancelAnimationFrame(SK2_raf);
+    SK2_last=performance.now(); SK2_raf=requestAnimationFrame(SK2_loop);
+  } else if(SK2_raf){cancelAnimationFrame(SK2_raf);SK2_raf=null;}
+}
+
+// ═══════════════════════════════════════════════════════
 // HOME SCREEN
 // ═══════════════════════════════════════════════════════
 function scrHome(){
@@ -4596,6 +4913,7 @@ function scrHome(){
     {t:"TYPE",              c:"#e2b714", i:"⌨️", b:"Solo & Race", m:"👤 Solo · 👥 2–8", d:"A clean typing speed test. Play solo to measure your WPM and accuracy, or race friends on the same words live.", go:"currentGame='type';TYPE_view='menu';render();"},
     {t:"BASKETBALL",        c:"#E8622C", i:"🏀", b:"Solo Arcade", m:"👤 Solo",       d:"Drag to aim, release to shoot 🏀 Sink it from a brand-new spot every score. Chase your best streak, unlock 12 ball skins.", href:"hoops/"},
     {t:"SKYSCRAPERS",       c:"#7EC8FF", i:"🏗️", b:"Solo Arcade", m:"👤 Solo",       d:"A crane carries each block 🏗️ Tap to drop it and stack the tower sky-high. Nail it dead-centre for a perfect. How high can you build?", href:"skyscrapers/"},
+    {t:"SKYSCRAPER 2",      c:"#6C8BFF", i:"🏙️", b:"Solo Arcade", m:"👤 Solo",       d:"A crane swings a block — tap to drop it onto the tower 🏙️ Same-size floors, line them up for a stable tower, cap each building with a roof. Dead-centre = PERFECT. Beat the platform high score!", go:"currentGame='sky2';SK2_phase='ready';render();"},
   ];
   const tile=g=>{
     const long=g.t.length>9?" long":"";
@@ -4685,6 +5003,8 @@ function zzHome(){
   try{ if(typeof SM_teardown==="function") SM_teardown(); }catch(e){}
   try{ if(typeof HP_teardown==="function") HP_teardown(); }catch(e){}
   try{ if(typeof HP_phase!=="undefined") HP_phase="setup"; }catch(e){}
+  try{ if(typeof SK2_teardown==="function") SK2_teardown(); }catch(e){}
+  try{ if(typeof SK2_phase!=="undefined") SK2_phase="ready"; }catch(e){}
   try{ if(typeof D_stopCanvasSync==="function") D_stopCanvasSync(); }catch(e){}
   try{ if(typeof EK_closeModal==="function") EK_closeModal(); }catch(e){}
   try{ document.body.classList.remove("typing-mode"); }catch(e){}
@@ -4714,6 +5034,7 @@ function render(){
   if(currentGame==="ek")   {renderEK(); return;}
   if(currentGame==="sumo") {renderSumo(); return;}
   if(currentGame==="hippo"){renderHippo(); return;}
+  if(currentGame==="sky2"){renderSkyscraper2(); return;}
 }
 
 // ═══════════════════════════════════════════════════════
