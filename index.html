@@ -4610,7 +4610,7 @@ const SK2_PALS=[
 let SK2_phase="ready";            // ready | play | over
 let SK2_W=340, SK2_H=380, SK2_dpr=1, SK2_cv=null, SK2_ctx=null, SK2_raf=null, SK2_last=0;
 let SK2_BW=92, SK2_BH=28, SK2_GROUND=340, SK2_TOPLINE=175, SK2_craneY=36, SK2_craneBottom=98;
-let SK2_amp=120, SK2_swingPhase=0, SK2_swingSpeed=0.05;
+let SK2_amp=120, SK2_swingPhase=0, SK2_swingSpeed=0.042;
 let SK2_blocks=[], SK2_drop=null, SK2_floors=0, SK2_score=0, SK2_combo=0;
 let SK2_floorInBldg=0, SK2_bldgFloors=6, SK2_palIdx=0;
 let SK2_scrollDisp=0, SK2_msg="", SK2_msgAt=0, SK2_shake=0, SK2_startAt=0;
@@ -4659,7 +4659,7 @@ function SK2_place(){
     SK2_floorInBldg++;
   }
   SK2_msgAt=ms();
-  SK2_swingSpeed=Math.min(0.12, 0.05 + SK2_floors*0.0016);
+  SK2_swingSpeed=Math.min(0.10, 0.042 + SK2_floors*0.0013);
   SK2_drop=null;
   SK2_spawnDrop();
 }
@@ -4884,7 +4884,7 @@ function bindSkyscraper2(){
     SK2_dpr=Math.min(2,window.devicePixelRatio||1);
     cv.width=SK2_W*SK2_dpr; cv.height=SK2_H*SK2_dpr; cv.style.height=SK2_H+"px";
     SK2_ctx=cv.getContext("2d"); SK2_ctx.setTransform(SK2_dpr,0,0,SK2_dpr,0,0);
-    SK2_BW=Math.round(Math.max(68,Math.min(120,SK2_W*0.27)));
+    SK2_BW=Math.round(Math.max(52,Math.min(92,SK2_W*0.21)));
     SK2_BH=28; SK2_GROUND=SK2_H-40; SK2_TOPLINE=Math.round(SK2_H*0.46);
     SK2_craneY=34; SK2_craneBottom=96; SK2_amp=SK2_W/2-SK2_BW/2-8;
     const tap=e=>{ e.preventDefault(); SK2_release(); };
