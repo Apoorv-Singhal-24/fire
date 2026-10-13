@@ -4929,6 +4929,16 @@ function bindSkyscraper2(){
 // ═══════════════════════════════════════════════════════
 const MZ_COLS=19, MZ_ROWS=21, MZ_BESTKEY="zz_muncher_best";
 const MZ_ECOL=["#FF5A5A","#49C5FF","#FF9BD6"];       // original enemy colours
+// Selectable maze layouts ("tracks"). Each returns true for a wall cell.
+// All leave the safe cells (tunnel row, chosen spawns & pips) open, and all
+// stay fully connected (validated). Patterns are original, not reproductions.
+let MZ_track=0;
+const MZ_TRACKS=[
+  {name:"Classic",   wall:(r,c)=> r%2===0 && c%2===0},
+  {name:"Open Arena",wall:(r,c)=> r%2===0 && c%2===0 && (r+c)%4===0},
+  {name:"Chambers",  wall:(r,c)=> (r%4===1||r%4===2) && (c%4===1||c%4===2)},
+  {name:"Columns",   wall:(r,c)=> c%2===0 && r%3!==0},
+];
 let MZ_phase="ready";                                 // ready | play | over | win
 let MZ_cv=null, MZ_ctx=null, MZ_raf=null, MZ_last=0, MZ_acc=0, MZ_dpr=1;
 let MZ_W=380, MZ_H=460, MZ_CELL=18, MZ_OY=26, MZ_tunRow=10;
@@ -4949,19 +4959,20 @@ function MZ_sfx(kind){try{const c=new(window.AudioContext||window.webkitAudioCon
 // ── maze (generated pillar lattice + side tunnel) ──
 function MZ_genMaze(){
   MZ_grid=[]; MZ_total=0;
+  const T=MZ_TRACKS[MZ_track]||MZ_TRACKS[0];
   for(let r=0;r<MZ_ROWS;r++){ const row=[]; for(let c=0;c<MZ_COLS;c++){
-    const wall = r===0||c===0||r===MZ_ROWS-1||c===MZ_COLS-1 || (r%2===0 && c%2===0);
+    const wall = r===0||c===0||r===MZ_ROWS-1||c===MZ_COLS-1 || T.wall(r,c);
     row.push(wall?"#":"."); } MZ_grid.push(row); }
   MZ_tunRow=Math.floor(MZ_ROWS/2);                       // open corridor + side tunnel
   for(let c=0;c<MZ_COLS;c++) MZ_grid[MZ_tunRow][c]=".";
   MZ_grid[MZ_tunRow][0]=" "; MZ_grid[MZ_tunRow][MZ_COLS-1]=" ";
-  // power pips near the 4 corners
-  for(const [r,c] of [[1,1],[1,MZ_COLS-2],[MZ_ROWS-2,1],[MZ_ROWS-2,MZ_COLS-2]]) MZ_grid[r][c]="o";
-  // clear player + enemy home cells (no dots there)
+  // power pips — cells open in every track, near the corners
+  for(const [r,c] of [[1,3],[1,MZ_COLS-4],[MZ_ROWS-2,3],[MZ_ROWS-2,MZ_COLS-4]]) MZ_grid[r][c]="o";
+  // spawns: player bottom-centre (open in every track); enemies on the tunnel row
   const ctr=Math.floor(MZ_COLS/2);
-  MZ_pspawn=[MZ_ROWS-2,ctr];                              // odd row → can move sideways right away
-  MZ_espawn=[[MZ_tunRow-1,ctr],[MZ_tunRow-1,ctr-1],[MZ_tunRow-1,ctr+1]];   // odd row, all open
-  for(const [r,c] of [MZ_pspawn,...MZ_espawn]) if(MZ_grid[r][c]!=="#") MZ_grid[r][c]=" ";
+  MZ_pspawn=[MZ_ROWS-2,ctr];
+  MZ_espawn=[[MZ_tunRow,ctr-1],[MZ_tunRow,ctr],[MZ_tunRow,ctr+1]];
+  for(const [r,c] of [MZ_pspawn,...MZ_espawn]) MZ_grid[r][c]=" ";   // carve open, no dot
   for(const row of MZ_grid) for(const ch of row) if(ch==="."||ch==="o") MZ_total++;
 }
 function MZ_wrap(r,c){ if(r===MZ_tunRow){ if(c<0)c=MZ_COLS-1; else if(c>=MZ_COLS)c=0; } return [r,c]; }
@@ -5143,24 +5154,37 @@ function MZ_loop(now){
 }
 
 // ── screens ──
+function MZ_trackPreview(i){
+  const T=MZ_TRACKS[i], cs=3, w=MZ_COLS*cs, h=MZ_ROWS*cs, tun=Math.floor(MZ_ROWS/2); let rects="";
+  for(let r=0;r<MZ_ROWS;r++)for(let c=0;c<MZ_COLS;c++){
+    const wall = r===0||c===0||r===MZ_ROWS-1||c===MZ_COLS-1 || (r!==tun && T.wall(r,c));
+    if(wall) rects+=`<rect x="${c*cs}" y="${r*cs}" width="${cs}" height="${cs}" fill="#2a4bff"/>`;
+  }
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" preserveAspectRatio="none" style="display:block;height:76px;background:#000;border-radius:6px">${rects}</svg>`;
+}
 function MZ_scrReady(){
   const best=MZ_hs.score>0?`🏆 Platform best: <b style="color:#FFD23F">${MZ_hs.score}</b>${MZ_hs.name?" by "+MZ_hs.name:""}`:"Be the first to set a platform record!";
   const yb=MZ_best>0?`<div style="color:var(--mu);font-size:12px;margin-top:4px">Your best: ${MZ_best}</div>`:"";
+  const tracks=MZ_TRACKS.map((t,i)=>`
+    <button class="mz-track" data-t="${i}" style="background:var(--ca2);border:2px solid ${i===MZ_track?'#FFE11A':'var(--bd)'};border-radius:12px;padding:6px;cursor:pointer;text-align:center">
+      ${MZ_trackPreview(i)}
+      <div style="font-size:11px;font-weight:900;color:${i===MZ_track?'#FFE11A':'var(--te)'};margin-top:5px">${t.name}</div>
+    </button>`).join("");
   return `
 <div class="fade" style="padding-top:20px">
   <button class="btn" id="mz-back" style="background:var(--ca2);color:var(--mu);border:1px solid var(--bd);width:auto;padding:8px 16px;font-size:13px;margin-bottom:22px">← Back</button>
-  <div style="text-align:center;margin-bottom:22px">
+  <div style="text-align:center;margin-bottom:20px">
     <div style="font-size:40px">🟡</div>
     <div class="hf" style="font-size:38px;color:#FFE11A;letter-spacing:1px;line-height:1;text-shadow:0 0 50px rgba(255,225,26,.4)">MAZE MUNCHER</div>
     <div style="color:var(--mu);margin-top:8px;font-size:14px">Eat every dot — don't get caught 👾</div>
     <div style="color:var(--te);margin-top:10px;font-size:13px;font-weight:800">${best}</div>${yb}
   </div>
-  <div class="card" style="margin-bottom:18px;font-size:13px;color:var(--mu);line-height:1.7">
-    <b style="color:var(--te)">How to play</b><br>
-    • <b>Arrow keys / WASD</b>, swipe, or the on-screen pad to move.<br>
-    • Eat all the dots to clear the maze.<br>
-    • Grab a glowing <b style="color:#ffe9c8">power-pip</b> to turn the chasers blue — then eat them for big points!<br>
-    • Getting caught costs a life. You have 3.
+  <div class="card" style="margin-bottom:16px">
+    <span class="lbl">Choose a maze</span>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px">${tracks}</div>
+  </div>
+  <div class="card" style="margin-bottom:18px;font-size:12.5px;color:var(--mu);line-height:1.6">
+    <b style="color:var(--te)">How to play</b> — <b>Arrows / WASD</b>, swipe or the on-screen pad. Eat all the dots to clear the maze; grab a glowing <b style="color:#ffe9c8">power-pip</b> to turn the chasers blue and eat them. Getting caught costs a life (you have 3).
   </div>
   <button class="btn" id="mz-start" style="background:#FFE11A;color:#2a2400;font-size:18px;padding:16px">▶ Start</button>
 </div>`;}
@@ -5228,6 +5252,7 @@ function bindMuncher(){
   on("mz-again",()=>MZ_start());
   on("mz-menu",()=>{ MZ_teardown(); MZ_phase="ready"; render(); });
   on("mz-save",()=>{ MZ_saveRecord($("mz-name")?.value.trim()); });
+  document.querySelectorAll(".mz-track").forEach(btn=>btn.onclick=()=>{ MZ_track=parseInt(btn.getAttribute("data-t"),10)||0; render(); });
   if(MZ_phase==="ready"){ MZ_loadHigh(); }
 
   const cv=$("mz-cv");
