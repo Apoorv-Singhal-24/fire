@@ -4609,10 +4609,11 @@ const SK2_PALS=[
 ];
 let SK2_phase="ready";            // ready | play | over
 let SK2_W=340, SK2_H=380, SK2_dpr=1, SK2_cv=null, SK2_ctx=null, SK2_raf=null, SK2_last=0;
-let SK2_BW=92, SK2_BH=28, SK2_GROUND=340, SK2_TOPLINE=175, SK2_craneY=36, SK2_craneBottom=98;
+let SK2_BW=92, SK2_baseBW=92, SK2_BH=28, SK2_GROUND=340, SK2_TOPLINE=175, SK2_craneY=36, SK2_craneBottom=98;
 let SK2_amp=120, SK2_swingPhase=0, SK2_swingSpeed=0.042;
+const SK2_SHRINK=6, SK2_MINBW=34;   // each colour set is SK2_SHRINK px narrower, down to SK2_MINBW
 let SK2_blocks=[], SK2_drop=null, SK2_floors=0, SK2_score=0, SK2_combo=0;
-let SK2_floorInBldg=0, SK2_bldgFloors=6, SK2_palIdx=0;
+let SK2_floorInBldg=0, SK2_bldgFloors=10, SK2_palIdx=0;   // 10 blocks per colour, then roof + new colour
 let SK2_scrollDisp=0, SK2_msg="", SK2_msgAt=0, SK2_shake=0, SK2_startAt=0;
 let SK2_best=0, SK2_hs={score:0,name:""}, SK2_recordPending=false;
 let SK2_fallers=[], SK2_keyHandler=null, SK2_overAt=0;
@@ -4625,11 +4626,13 @@ function SK2_sfx(kind){try{const c=new(window.AudioContext||window.webkitAudioCo
   g.gain.setValueAtTime(.05,t);g.gain.exponentialRampToValueAtTime(.001,t+(kind==="over"?.32:.18));o.start(t);o.stop(t+.33);}catch(e){}}
 
 function SK2_screenBottom(i){ return SK2_GROUND - i*SK2_BH + SK2_scrollDisp; }
-function SK2_winPattern(roof){ const n=roof?0:3; const a=[]; for(let i=0;i<n;i++)a.push(Math.random()<0.55); return a; }
+function SK2_curW(){ return Math.max(SK2_MINBW, SK2_baseBW - SK2_palIdx*SK2_SHRINK); }   // width of the current colour set
+function SK2_winPattern(roof,w){ const n=roof?0:Math.max(2,Math.round(w/26)); const a=[]; for(let i=0;i<n;i++)a.push(Math.random()<0.55); return a; }
 
 function SK2_spawnDrop(){
   const roof = SK2_floorInBldg>=SK2_bldgFloors;
-  SK2_drop={cx:SK2_W/2, by:SK2_craneBottom, vy:0, state:"swing", roof, win:SK2_winPattern(roof), pal:SK2_PALS[SK2_palIdx%SK2_PALS.length]};
+  SK2_BW=SK2_curW();
+  SK2_drop={cx:SK2_W/2, by:SK2_craneBottom, vy:0, state:"swing", roof, w:SK2_BW, win:SK2_winPattern(roof,SK2_BW), pal:SK2_PALS[SK2_palIdx%SK2_PALS.length]};
   SK2_swingPhase=Math.random()*Math.PI*2;
 }
 function SK2_release(){
@@ -4639,19 +4642,19 @@ function SK2_release(){
 function SK2_place(){
   const d=SK2_drop, top=SK2_blocks[SK2_blocks.length-1];
   const off=d.cx-top.cx, aoff=Math.abs(off);
-  if(aoff > SK2_BW*0.64){                // hangs too far → topples off
-    SK2_fallers.push({cx:d.cx, by:d.by, vy:d.vy, vx:(off>0?3:-3), rot:0, vr:(off>0?0.12:-0.12), roof:d.roof, win:d.win, pal:d.pal});
+  if(aoff > top.w*0.6){                   // centre past the support edge → topples off
+    SK2_fallers.push({cx:d.cx, by:d.by, vy:d.vy, vx:(off>0?3:-3), rot:0, vr:(off>0?0.12:-0.12), roof:d.roof, w:d.w, win:d.win, pal:d.pal});
     SK2_gameOver(); return;
   }
-  const perfect = aoff<=7;
+  const perfect = aoff <= Math.max(5, d.w*0.09);
   const cx = perfect? top.cx : d.cx;
-  SK2_blocks.push({cx, roof:d.roof, win:d.win, pal:d.pal});
+  SK2_blocks.push({cx, roof:d.roof, w:d.w, win:d.win, pal:d.pal});
   SK2_floors++;
-  SK2_shake=Math.min(1, aoff/SK2_BW + (d.roof?0.2:0));
+  SK2_shake=Math.min(1, aoff/d.w + (d.roof?0.2:0));
   if(d.roof){
     SK2_score+=100; SK2_combo=0; SK2_msg="🏙️ BUILDING DONE! +100"; SK2_sfx("roof");
     try{zzFireworks(false);}catch(e){}
-    SK2_floorInBldg=0; SK2_palIdx++;
+    SK2_floorInBldg=0; SK2_palIdx++; SK2_BW=SK2_curW();   // new colour set is narrower
   }else{
     SK2_score+=10;
     if(perfect){ SK2_combo++; const bonus=10+SK2_combo*4; SK2_score+=bonus; SK2_msg="PERFECT! +"+(10+bonus); SK2_sfx("perfect"); }
@@ -4694,7 +4697,8 @@ function SK2_loop(now){
   if(SK2_phase==="play" && SK2_drop){
     if(SK2_drop.state==="swing"){
       SK2_swingPhase+=SK2_swingSpeed*dtf;
-      SK2_drop.cx=SK2_W/2 + SK2_amp*Math.sin(SK2_swingPhase);
+      const amp=SK2_W/2 - SK2_drop.w/2 - 8;   // narrower blocks swing wider
+      SK2_drop.cx=SK2_W/2 + amp*Math.sin(SK2_swingPhase);
       SK2_drop.by=SK2_craneBottom;
     }else{
       SK2_drop.vy+=0.9*dtf; SK2_drop.by+=SK2_drop.vy*dtf;
@@ -4716,7 +4720,7 @@ function SK2_skyCol(){
   return [`rgb(${top[0]|0},${top[1]|0},${top[2]|0})`,`rgb(${bot[0]|0},${bot[1]|0},${bot[2]|0})`];
 }
 function SK2_block(cx,bottom,blk,ghost){
-  const c=SK2_ctx, x=cx-SK2_BW/2, y=bottom-SK2_BH, w=SK2_BW, h=SK2_BH;
+  const c=SK2_ctx, w=blk.w||SK2_BW, x=cx-w/2, y=bottom-SK2_BH, h=SK2_BH;
   c.save(); if(ghost)c.globalAlpha=0.9;
   // body
   c.fillStyle=blk.pal.b; c.beginPath(); c.rect(x,y,w,h); c.fill();
@@ -4846,12 +4850,10 @@ function SK2_scrOver(){
 // ── lifecycle ──
 function SK2_start(){
   SK2_teardown();
-  SK2_blocks=[]; SK2_fallers=[]; SK2_score=0; SK2_floors=1; SK2_combo=0;
+  SK2_blocks=[]; SK2_fallers=[]; SK2_drop=null; SK2_score=0; SK2_floors=0; SK2_combo=0;
   SK2_floorInBldg=0; SK2_palIdx=0; SK2_scrollDisp=0; SK2_msg=""; SK2_recordPending=false;
-  SK2_blocks.push({cx:SK2_W/2, roof:false, win:SK2_winPattern(false), pal:SK2_PALS[0]});
-  SK2_phase="play"; SK2_startAt=ms();
-  SK2_spawnDrop();
-  render();
+  SK2_phase="play";
+  render();   // bind measures the canvas, then seeds the base block + first drop
 }
 function SK2_teardown(){
   if(SK2_raf){cancelAnimationFrame(SK2_raf);SK2_raf=null;}
@@ -4884,9 +4886,15 @@ function bindSkyscraper2(){
     SK2_dpr=Math.min(2,window.devicePixelRatio||1);
     cv.width=SK2_W*SK2_dpr; cv.height=SK2_H*SK2_dpr; cv.style.height=SK2_H+"px";
     SK2_ctx=cv.getContext("2d"); SK2_ctx.setTransform(SK2_dpr,0,0,SK2_dpr,0,0);
-    SK2_BW=Math.round(Math.max(52,Math.min(92,SK2_W*0.21)));
+    SK2_baseBW=Math.round(Math.max(52,Math.min(92,SK2_W*0.21)));
+    SK2_BW=SK2_curW();
     SK2_BH=28; SK2_GROUND=SK2_H-40; SK2_TOPLINE=Math.round(SK2_H*0.46);
     SK2_craneY=34; SK2_craneBottom=96; SK2_amp=SK2_W/2-SK2_BW/2-8;
+    if(SK2_phase==="play" && SK2_blocks.length===0){   // seed base block at the measured width
+      SK2_BW=SK2_curW();
+      SK2_blocks.push({cx:SK2_W/2, roof:false, w:SK2_BW, win:SK2_winPattern(false,SK2_BW), pal:SK2_PALS[0]});
+      SK2_floors=1; SK2_floorInBldg=0; SK2_spawnDrop(); SK2_startAt=ms();
+    }
     const tap=e=>{ e.preventDefault(); SK2_release(); };
     arena.onpointerdown=tap;
     const db2=$("sk2-drop"); if(db2)db2.onpointerdown=tap;
