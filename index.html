@@ -6,8 +6,8 @@
 
 <!-- ── PRIMARY SEO ─────────────────────────────────────────────── -->
 <title>ZipZap Games — Free Multiplayer Party Games Online</title>
-<meta name="description" content="Play free multiplayer party games with friends online. BLITZ: name something in a category first. PSYCH: fool your friends with fake answers. BLUFF: the classic lying card game. CABO: the low-score memory card game. PICTIONARY: real-time draw & guess. TYPE: a typing speed race. EXPLODING KITTENS: the cute chaotic card game — solo or in a room. SUMO SMASH: mash to shove your rival out of the ring. HIPPO CHOMP: tap your hippo's mouth to gobble your colour before your rival. Plus BASKETBALL, SKYSCRAPERS, SKYSCRAPER 2 and MAZE MUNCHER: solo arcade games. No download needed — play instantly in your browser.">
-<meta name="keywords" content="multiplayer party game online, free browser game, word game with friends, bluffing game, psych game, blitz word game, bluff card game, cheat card game online, cabo card game online, exploding kittens online, exploding kittens free, pictionary online, drawing and guessing game, typing race game, typing speed test, basketball game online, free basketball shooting game, skyscraper stacking game, tower block game online, stack game, crane stacking game, build a tower game, maze game online, dot muncher game, arcade maze chase game,hungry hippos game online, hippo game, tap game, hippo chomp, sumo game online, sumo tap battle, tap battle game, online party game, game to play with friends, no download game">
+<meta name="description" content="Play free multiplayer party games with friends online. BLITZ: name something in a category first. PSYCH: fool your friends with fake answers. BLUFF: the classic lying card game. CABO: the low-score memory card game. PICTIONARY: real-time draw & guess. TYPE: a typing speed race. EXPLODING KITTENS: the cute chaotic card game — solo or in a room. SUMO SMASH: mash to shove your rival out of the ring. HIPPO CHOMP: tap your hippo's mouth to gobble your colour before your rival. Plus BASKETBALL, SKYSCRAPERS, SKYSCRAPER 2, MAZE MUNCHER and DINO DASH: solo arcade games. No download needed — play instantly in your browser.">
+<meta name="keywords" content="multiplayer party game online, free browser game, word game with friends, bluffing game, psych game, blitz word game, bluff card game, cheat card game online, cabo card game online, exploding kittens online, exploding kittens free, pictionary online, drawing and guessing game, typing race game, typing speed test, basketball game online, free basketball shooting game, skyscraper stacking game, tower block game online, stack game, crane stacking game, build a tower game, maze game online, dot muncher game, arcade maze chase game, endless runner game, dino run game, jump and dodge game,hungry hippos game online, hippo game, tap game, hippo chomp, sumo game online, sumo tap battle, tap battle game, online party game, game to play with friends, no download game">
 <meta name="author" content="ZipZap Games">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://zipzap-games.com/">
@@ -213,6 +213,19 @@
         "@type": "Game",
         "name": "Maze Muncher",
         "description": "An original maze-chase arcade game. Guide your muncher around a neon maze eating every dot while coloured creatures hunt you. Grab a glowing power-pip to turn the chasers edible for a few seconds and gobble them for big points. Clear the board to advance, with faster enemies each level. Arrow keys, swipe, or an on-screen pad. Play solo to beat the platform-wide high score.",
+        "url": "https://zipzap-games.com",
+        "genre": "Arcade Game",
+        "numberOfPlayers": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 1 },
+        "gamePlatform": "Web Browser"
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 14,
+      "item": {
+        "@type": "Game",
+        "name": "Dino Dash",
+        "description": "An original endless-runner arcade game. Your cartoon dino runs across the desert while cacti and birds come at you — tap or press space to jump over the cacti, and hold to duck under the birds. It speeds up the further you go, with a day-and-night cycle, and your distance is your score. Play solo to beat the platform-wide high score.",
         "url": "https://zipzap-games.com",
         "genre": "Arcade Game",
         "numberOfPlayers": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 1 },
@@ -565,6 +578,8 @@ body.typing-mode #app{max-width:960px}
     <p>A free single-player crane-drop tower stacking game. A crane swings a same-size block back and forth — tap to drop it onto the tower and line it up for a stable build. Dead-centre drops score a perfect with a combo bonus, a flat roof caps each building, and overhanging too far topples the tower. Beat the platform-wide high score. 1 player.</p>
     <h2 style="color:#FFE11A;margin-top:24px">MAZE MUNCHER — Maze-Chase Arcade</h2>
     <p>A free original single-player maze-chase arcade game. Guide your muncher around a neon maze eating every dot while coloured creatures hunt you. Grab a glowing power-pip to turn the chasers edible for a few seconds and gobble them for big points. Clear the board to advance, with faster enemies each level. Play with arrow keys, swipe, or the on-screen pad, and beat the platform-wide high score. 1 player.</p>
+    <h2 style="color:#9AA3B2;margin-top:24px">DINO DASH — Endless Runner</h2>
+    <p>A free original single-player endless-runner arcade game. Your cartoon dino runs across the desert while cacti and birds come at you — tap or press space to jump over the cacti, and hold to duck under the birds. It speeds up the further you go, with a day-and-night cycle, and your distance is your score. Beat the platform-wide high score. 1 player.</p>
     <p style="margin-top:24px">Enable JavaScript to play at <strong>zipzap-games.com</strong></p>
   </div>
 </noscript>
@@ -5289,6 +5304,278 @@ function bindMuncher(){
 }
 
 // ═══════════════════════════════════════════════════════
+// DINO DASH  (original endless runner — jump the cacti, duck
+//   the birds. Original character & art, not a licensed clone.)
+// ═══════════════════════════════════════════════════════
+const DR_BESTKEY="zz_dino_best";
+let DR_phase="ready";                                  // ready | play | over
+let DR_cv=null, DR_ctx=null, DR_raf=null, DR_last=0, DR_dpr=1;
+let DR_W=600, DR_H=220, DR_GROUND=186;
+let DR_dist=0, DR_score=0, DR_best=0, DR_hs={score:0,name:""}, DR_recordPending=false;
+let DR_y=0, DR_vy=0, DR_onGround=true, DR_duck=false, DR_run=0;
+let DR_obs=[], DR_nextGap=0, DR_speed=330, DR_night=false, DR_flash=0;
+let DR_keyDown=null, DR_keyUp=null, DR_startAt=0;
+const DR_G=2600, DR_JUMP=800, DR_X=48;
+
+function DR_sfx(kind){try{const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);const t=c.currentTime;
+  if(kind==="jump"){o.type="square";o.frequency.setValueAtTime(520,t);o.frequency.exponentialRampToValueAtTime(900,t+.1);}
+  else if(kind==="point"){o.type="triangle";o.frequency.setValueAtTime(760,t);o.frequency.exponentialRampToValueAtTime(1150,t+.08);}
+  else{o.type="sawtooth";o.frequency.setValueAtTime(300,t);o.frequency.exponentialRampToValueAtTime(60,t+.4);}
+  g.gain.setValueAtTime(.045,t);g.gain.exponentialRampToValueAtTime(.001,t+(kind==="over"?.42:.14));o.start(t);o.stop(t+.44);}catch(e){}}
+
+function DR_resetRun(){
+  DR_dist=0; DR_score=0; DR_y=0; DR_vy=0; DR_onGround=true; DR_duck=false; DR_run=0;
+  DR_obs=[]; DR_speed=330; DR_nextGap=DR_W*0.9; DR_night=false; DR_recordPending=false; DR_flash=0;
+}
+function DR_jump(){
+  if(DR_phase!=="play")return;
+  if(DR_onGround){ DR_vy=DR_JUMP; DR_onGround=false; DR_duck=false; DR_sfx("jump"); }
+}
+function DR_setDuck(on){ if(DR_phase==="play") DR_duck=on && DR_onGround; }
+
+function DR_spawn(){
+  const bird = DR_score>150 && Math.random()<0.34;
+  if(bird){ const h=20; DR_obs.push({type:"bird", x:DR_W+20, w:34, h, y:DR_GROUND-56, flap:0}); }
+  else { const n=1+((Math.random()*3)|0); const w=12+n*7, h=24+((Math.random()*16)|0);
+    DR_obs.push({type:"cactus", x:DR_W+20, w, h, y:DR_GROUND-h, bumps:n}); }
+}
+function DR_box(){ const h=DR_duck?22:40, w=DR_duck?46:34, by=DR_GROUND-DR_y;
+  return {x:DR_X, y:by-h, w, h}; }
+function DR_hit(a,b){ return a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y; }
+
+function DR_step(dt){
+  DR_run+=dt* DR_speed*0.06;
+  DR_speed=Math.min(760, 330 + DR_dist*0.00055);
+  DR_dist+=DR_speed*dt;
+  const ns=Math.floor(DR_dist/16);
+  if(ns>DR_score && ns%100===0) DR_sfx("point");
+  DR_score=ns;
+  const night=Math.floor(DR_score/400)%2===1; if(night!==DR_night){ DR_night=night; DR_flash=1; }
+  if(DR_flash>0)DR_flash=Math.max(0,DR_flash-dt*2);
+  // vertical
+  if(!DR_onGround){ DR_vy-=DR_G*dt; DR_y+=DR_vy*dt; if(DR_y<=0){ DR_y=0; DR_vy=0; DR_onGround=true; } }
+  // obstacles
+  for(const o of DR_obs){ o.x-=DR_speed*dt; if(o.type==="bird")o.flap=(o.flap+dt*10)%2; }
+  DR_obs=DR_obs.filter(o=>o.x+o.w>-10);
+  DR_nextGap-=DR_speed*dt;
+  if(DR_nextGap<=0){ DR_spawn(); const minG=Math.max(190, 560-DR_speed*0.35); DR_nextGap=minG+Math.random()*220; }
+  // collision
+  const pb=DR_box();
+  for(const o of DR_obs){ if(DR_hit(pb,{x:o.x,y:o.y,w:o.w,h:o.h})){ DR_over(); return; } }
+}
+function DR_over(){
+  DR_phase="over"; DR_sfx("over");
+  if(DR_score>DR_best){ DR_best=DR_score; try{localStorage.setItem(DR_BESTKEY,String(DR_best));}catch(e){} }
+  if(DR_score>(DR_hs.score||0)) DR_recordPending=true;
+  if(DR_raf){cancelAnimationFrame(DR_raf);DR_raf=null;}
+  setTimeout(()=>{ if(DR_phase==="over")render(); }, 500);
+}
+function DR_loadHigh(){
+  try{ DR_best=parseInt(localStorage.getItem(DR_BESTKEY)||"0",10)||0; }catch(e){}
+  try{ db.ref("dino/high").once("value").then(s=>{ const v=s.val(); if(v&&typeof v.score==="number"){ DR_hs=v; if(DR_phase==="ready"||DR_phase==="over")render(); } }).catch(()=>{}); }catch(e){}
+}
+function DR_saveRecord(name){
+  const sc=DR_score, nm=(name||"Anonymous").slice(0,18); DR_hs={score:sc,name:nm}; DR_recordPending=false;
+  try{ db.ref("dino/high").transaction(cur=>{ if(!cur||typeof cur.score!=="number"||sc>=cur.score)return {score:sc,name:nm}; return cur; }).catch(()=>{}); }catch(e){}
+  toast("🏆 New platform record saved!","ok"); render();
+}
+
+// ── drawing ──
+function DR_draw(){
+  const c=DR_ctx; const night=DR_night;
+  const bg = night?"#12151f":"#f3f6fb", fg = night?"#e6ebf5":"#3a4254";
+  c.fillStyle=bg; c.fillRect(0,0,DR_W,DR_H);
+  // sun / moon
+  c.fillStyle=night?"#cfd6e6":"#ffe08a"; c.beginPath(); c.arc(46,34,15,0,6.28); c.fill();
+  if(night){ c.fillStyle=bg; c.beginPath(); c.arc(52,30,13,0,6.28); c.fill(); }
+  // clouds (parallax)
+  c.fillStyle=night?"rgba(255,255,255,.08)":"rgba(160,180,210,.5)";
+  for(let i=0;i<3;i++){ const cx=((DR_W - (DR_dist*0.2 + i*220)% (DR_W+120))); const cy=36+i*22;
+    c.beginPath(); c.arc(cx,cy,11,0,6.28); c.arc(cx+12,cy+3,8,0,6.28); c.arc(cx-12,cy+3,8,0,6.28); c.fill(); }
+  // ground line + moving dashes
+  c.strokeStyle=fg; c.lineWidth=2; c.beginPath(); c.moveTo(0,DR_GROUND); c.lineTo(DR_W,DR_GROUND); c.stroke();
+  c.lineWidth=2; for(let i=0;i<DR_W/40+2;i++){ const x=(i*40 - (DR_dist*1)% 40); c.beginPath(); c.moveTo(x,DR_GROUND+8); c.lineTo(x+14,DR_GROUND+8); c.stroke(); }
+  // obstacles
+  for(const o of DR_obs){ if(o.type==="cactus")DR_drawCactus(o,fg); else DR_drawBird(o,fg); }
+  // hero
+  DR_drawDino(fg,night);
+  // flash on day/night flip
+  if(DR_flash>0){ c.globalAlpha=DR_flash*0.5; c.fillStyle=night?"#000":"#fff"; c.fillRect(0,0,DR_W,DR_H); c.globalAlpha=1; }
+  // HUD
+  c.fillStyle=fg; c.font="900 16px Nunito,sans-serif"; c.textAlign="right"; c.textBaseline="top";
+  c.fillText(String(DR_score).padStart(5,"0"), DR_W-10, 10);
+  c.font="900 11px Nunito,sans-serif"; c.fillStyle=night?"rgba(230,235,245,.6)":"rgba(58,66,84,.6)";
+  c.fillText("HI "+String(Math.max(DR_best,DR_score)).padStart(5,"0"), DR_W-10, 30);
+  if(DR_phase==="play"&&DR_dist<340){ c.textAlign="center"; c.fillStyle=fg; c.font="900 13px Nunito,sans-serif"; c.fillText("TAP / SPACE to jump · hold DUCK to duck", DR_W/2, DR_H-20); }
+}
+function DR_drawCactus(o,fg){
+  const c=DR_ctx, x=o.x, y=o.y, w=o.w, h=o.h;
+  c.fillStyle=DR_night?"#4a7a4a":"#4f9a52";
+  c.beginPath(); if(c.roundRect)c.roundRect(x+w/2-4,y,8,h,3); else c.rect(x+w/2-4,y,8,h); c.fill();
+  // arms
+  for(const s of [-1,1]){ if(o.bumps>1){ c.beginPath(); if(c.roundRect)c.roundRect(x+w/2+s*8-3,y+h*0.35,6,h*0.4,3); else c.rect(x+w/2+s*8-3,y+h*0.35,6,h*0.4); c.fill();
+    c.fillRect(x+w/2+s*8-3, y+h*0.35, 6, 6); } }
+}
+function DR_drawBird(o,fg){
+  const c=DR_ctx, x=o.x, y=o.y+o.h/2; const up=o.flap<1;
+  c.fillStyle=DR_night?"#b9c3da":"#5a6a8a";
+  c.beginPath(); c.ellipse(x+16,y,10,6,0,0,6.28); c.fill();                 // body
+  c.beginPath(); c.arc(x+26,y-2,4,0,6.28); c.fill();                        // head
+  c.beginPath(); c.moveTo(x+14,y); c.lineTo(x+2, y+(up?-10:10)); c.lineTo(x+20,y); c.closePath(); c.fill(); // wing
+}
+function DR_drawDino(fg,night){
+  const c=DR_ctx; const grey=night?"#aab2c4":"#8b93a4", dk=night?"#8a92a6":"#6c7384";
+  const by=DR_GROUND-DR_y;
+  c.save();
+  if(DR_duck && DR_onGround){
+    // crouched pose
+    c.fillStyle=grey; c.beginPath(); if(c.roundRect)c.roundRect(DR_X-2,by-22,50,22,8); else c.rect(DR_X-2,by-22,50,22); c.fill();
+    c.fillStyle=grey; c.beginPath(); c.arc(DR_X+46,by-16,9,0,6.28); c.fill();     // head forward
+    c.fillStyle=night?"#12151f":"#f3f6fb"; c.beginPath(); c.arc(DR_X+49,by-18,2,0,6.28); c.fill();
+    // legs
+    c.fillStyle=dk; const ph=(DR_run|0)%2; c.fillRect(DR_X+6,by-6,6,6); c.fillRect(DR_X+22,by-6,6,6);
+    c.restore(); return;
+  }
+  const bob=DR_onGround?Math.sin(DR_run)*1.2:0;
+  // body (original rounded cartoon dino)
+  c.fillStyle=grey; c.beginPath(); if(c.roundRect)c.roundRect(DR_X,by-40+bob,30,34,10); else c.rect(DR_X,by-40+bob,30,34); c.fill();
+  // tail
+  c.beginPath(); c.moveTo(DR_X,by-30+bob); c.lineTo(DR_X-12,by-20+bob); c.lineTo(DR_X,by-14+bob); c.closePath(); c.fill();
+  // head
+  c.beginPath(); if(c.roundRect)c.roundRect(DR_X+18,by-50+bob,24,20,8); else c.rect(DR_X+18,by-50+bob,24,20); c.fill();
+  // snout
+  c.fillRect(DR_X+36,by-44+bob,8,8);
+  // back ridges
+  c.fillStyle=dk; for(let i=0;i<3;i++){ c.beginPath(); c.moveTo(DR_X+6+i*8,by-40+bob); c.lineTo(DR_X+10+i*8,by-46+bob); c.lineTo(DR_X+14+i*8,by-40+bob); c.closePath(); c.fill(); }
+  // eye
+  c.fillStyle=night?"#12151f":"#f3f6fb"; c.beginPath(); c.arc(DR_X+34,by-42+bob,3.2,0,6.28); c.fill();
+  c.fillStyle=night?"#e6ebf5":"#2a3040"; c.beginPath(); c.arc(DR_X+35,by-42+bob,1.5,0,6.28); c.fill();
+  // little arm
+  c.fillStyle=grey; c.fillRect(DR_X+28,by-24+bob,8,5);
+  // legs (running animation)
+  c.fillStyle=dk;
+  if(DR_onGround){ const ph=Math.sin(DR_run*1.1)>0;
+    c.fillRect(DR_X+6, by-6, 7, 6+(ph?0:2)); c.fillRect(DR_X+18, by-6, 7, 6+(ph?2:0)); }
+  else { c.fillRect(DR_X+6,by-6,7,5); c.fillRect(DR_X+18,by-6,7,5); }
+  c.restore();
+}
+
+// ── loop ──
+function DR_loop(now){
+  if(!DR_ctx){DR_raf=null;return;}
+  let dt=(now-DR_last)/1000; DR_last=now; if(dt>0.05)dt=0.05;
+  if(DR_phase==="play") DR_step(dt);
+  DR_draw();
+  DR_raf=requestAnimationFrame(DR_loop);
+}
+
+// ── screens ──
+function DR_scrReady(){
+  const best=DR_hs.score>0?`🏆 Platform best: <b style="color:#FFD23F">${DR_hs.score}</b>${DR_hs.name?" by "+DR_hs.name:""}`:"Be the first to set a platform record!";
+  const yb=DR_best>0?`<div style="color:var(--mu);font-size:12px;margin-top:4px">Your best: ${DR_best}</div>`:"";
+  return `
+<div class="fade" style="padding-top:20px">
+  <button class="btn" id="dr-back" style="background:var(--ca2);color:var(--mu);border:1px solid var(--bd);width:auto;padding:8px 16px;font-size:13px;margin-bottom:22px">← Back</button>
+  <div style="text-align:center;margin-bottom:22px">
+    <div style="font-size:40px">🦖</div>
+    <div class="hf" style="font-size:40px;color:#9AA3B2;letter-spacing:1px;line-height:1;text-shadow:0 0 50px rgba(154,163,178,.4)">DINO DASH</div>
+    <div style="color:var(--mu);margin-top:8px;font-size:14px">Run as far as you can 🌵</div>
+    <div style="color:var(--te);margin-top:10px;font-size:13px;font-weight:800">${best}</div>${yb}
+  </div>
+  <div class="card" style="margin-bottom:18px;font-size:13px;color:var(--mu);line-height:1.7">
+    <b style="color:var(--te)">How to play</b><br>
+    • <b>Tap / Space / ▲</b> to jump over cacti.<br>
+    • <b>Hold DUCK / ▼</b> to duck under birds.<br>
+    • It gets faster the further you go — how far can you run?
+  </div>
+  <button class="btn" id="dr-start" style="background:#9AA3B2;color:#161a22;font-size:18px;padding:16px">▶ Start Running</button>
+</div>`;}
+function DR_scrGame(){
+  return `
+<div class="fade" style="padding-top:12px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <button class="btn" id="dr-back" style="background:var(--ca2);color:var(--mu);border:1px solid var(--bd);width:auto;padding:7px 13px;font-size:12px">← Quit</button>
+    <div style="font-weight:900;color:var(--mu);font-size:13px">Tap to jump</div>
+  </div>
+  <div id="dr-arena" style="border-radius:16px;overflow:hidden;line-height:0;box-shadow:0 10px 30px rgba(0,0,0,.4)">
+    <canvas id="dr-cv" style="display:block;width:100%;touch-action:none"></canvas>
+  </div>
+  <div class="g2" style="grid-template-columns:2fr 1fr;gap:10px;margin-top:12px">
+    <button class="btn" id="dr-jump" style="background:linear-gradient(135deg,#9AA3B2,#b7c0d0);color:#161a22;font-size:18px;font-weight:900;padding:16px;box-shadow:0 5px 0 #6a7385">⤴ JUMP</button>
+    <button class="btn" id="dr-duckbtn" style="background:var(--ca2);color:var(--te);border:2px solid var(--bd);font-size:16px;font-weight:900;padding:16px">⤵ DUCK</button>
+  </div>
+</div>`;}
+function DR_scrOver(){
+  const rec=DR_recordPending;
+  setTimeout(()=>{try{playSfx(rec?"win":"fool");}catch(e){} if(rec)try{zzWin("dino-rec",true);}catch(e){}},160);
+  const recordInput = rec
+    ? `<div class="card" style="margin:18px 0"><span class="lbl">New platform record! Add your name</span>
+         <div class="row"><input class="inp" id="dr-name" placeholder="Your name" maxlength="18" value="${(myName||'').replace(/"/g,'')}" style="flex:1;border-color:#FFD23F">
+         <button class="btn" id="dr-save" style="background:#FFD23F;color:#3a2a00;width:auto;padding:12px 18px;flex-shrink:0">Save 🏆</button></div></div>` : "";
+  return `
+<div class="fade" style="padding-top:36px;text-align:center">
+  ${ZZ_HOMEBTN}
+  <div style="font-size:56px;margin-bottom:2px">${rec?"🏆":"🌵"}</div>
+  <div class="hf" style="font-size:30px;color:#9AA3B2;text-shadow:0 0 40px rgba(154,163,178,.4)">${rec?"NEW RECORD!":"Game Over"}</div>
+  <div style="margin-top:14px"><div class="hf" style="font-size:56px;color:#9AA3B2">${DR_score}</div>
+    <div style="color:var(--mu);font-size:13px;margin-top:2px">your best ${DR_best}</div>
+    <div style="color:var(--te);font-size:13px;font-weight:800;margin-top:8px">🏆 Platform best: ${DR_hs.score||0}${DR_hs.name?" by "+DR_hs.name:""}</div></div>
+  ${recordInput}
+  <div style="margin-top:24px">
+    <button class="btn" id="dr-again" style="background:#9AA3B2;color:#161a22;font-size:17px;padding:15px;margin-bottom:12px">🔁 Run Again</button>
+    <button class="btn" id="dr-menu" style="background:var(--ca2);color:var(--te);border:1px solid var(--bd);font-size:15px;padding:13px">Back to start</button>
+  </div>
+</div>`;}
+
+// ── lifecycle ──
+function DR_start(){ DR_teardown(); DR_resetRun(); DR_phase="play"; DR_startAt=ms(); render(); }
+function DR_teardown(){
+  if(DR_raf){cancelAnimationFrame(DR_raf);DR_raf=null;}
+  if(DR_keyDown){document.removeEventListener("keydown",DR_keyDown);DR_keyDown=null;}
+  if(DR_keyUp){document.removeEventListener("keyup",DR_keyUp);DR_keyUp=null;}
+  DR_ctx=null; DR_cv=null;
+}
+function renderDino(){
+  const app=document.getElementById("app"); if(!app)return;
+  if(DR_phase==="ready") app.innerHTML=DR_scrReady();
+  else if(DR_phase==="over") app.innerHTML=DR_scrOver();
+  else app.innerHTML=DR_scrGame();
+  bindDino();
+}
+function bindDino(){
+  const $=id=>document.getElementById(id),on=(id,fn)=>{const el=$(id);if(el)el.onclick=fn;};
+  on("dr-back",()=>{ if(DR_phase==="play"){ DR_teardown(); DR_phase="ready"; render(); } else { DR_teardown(); DR_phase="ready"; currentGame=null; gs=null; render(); } });
+  on("dr-start",()=>DR_start());
+  on("dr-again",()=>DR_start());
+  on("dr-menu",()=>{ DR_teardown(); DR_phase="ready"; render(); });
+  on("dr-save",()=>{ DR_saveRecord($("dr-name")?.value.trim()); });
+  if(DR_phase==="ready"){ DR_loadHigh(); }
+
+  const cv=$("dr-cv");
+  if(cv){
+    DR_cv=cv; const arena=$("dr-arena");
+    DR_W=Math.round(arena.clientWidth||600);
+    DR_H=Math.round(Math.max(210,Math.min(280, DR_W*0.56)));
+    DR_GROUND=DR_H-34;
+    DR_dpr=Math.min(2,window.devicePixelRatio||1);
+    cv.width=DR_W*DR_dpr; cv.height=DR_H*DR_dpr; cv.style.height=DR_H+"px";
+    DR_ctx=cv.getContext("2d"); DR_ctx.setTransform(DR_dpr,0,0,DR_dpr,0,0);
+    if(!DR_ctx.roundRect)DR_ctx.roundRect=function(x,y,w,h,r){this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);return this;};
+    // input
+    cv.onpointerdown=e=>{ e.preventDefault(); DR_jump(); };
+    const jb=$("dr-jump"); if(jb)jb.onpointerdown=e=>{ e.preventDefault(); DR_jump(); };
+    const dk=$("dr-duckbtn");
+    if(dk){ dk.onpointerdown=e=>{ e.preventDefault(); DR_setDuck(true); }; dk.onpointerup=e=>{ DR_setDuck(false); }; dk.onpointerleave=e=>{ DR_setDuck(false); }; dk.onpointercancel=e=>{ DR_setDuck(false); }; }
+    DR_keyDown=ev=>{ if(ev.key===" "||ev.key==="ArrowUp"||ev.key==="w"||ev.key==="W"){ ev.preventDefault(); DR_jump(); }
+      else if(ev.key==="ArrowDown"||ev.key==="s"||ev.key==="S"){ ev.preventDefault(); DR_setDuck(true); } };
+    DR_keyUp=ev=>{ if(ev.key==="ArrowDown"||ev.key==="s"||ev.key==="S"){ DR_setDuck(false); } };
+    document.addEventListener("keydown",DR_keyDown); document.addEventListener("keyup",DR_keyUp);
+    if(DR_raf)cancelAnimationFrame(DR_raf);
+    DR_last=performance.now(); DR_raf=requestAnimationFrame(DR_loop);
+  } else if(DR_raf){cancelAnimationFrame(DR_raf);DR_raf=null;}
+}
+
+// ═══════════════════════════════════════════════════════
 // HOME SCREEN
 // ═══════════════════════════════════════════════════════
 function scrHome(){
@@ -5306,6 +5593,7 @@ function scrHome(){
     {t:"SKYSCRAPERS",       c:"#7EC8FF", i:"🏗️", b:"Solo Arcade", m:"👤 Solo",       d:"A crane carries each block 🏗️ Tap to drop it and stack the tower sky-high. Nail it dead-centre for a perfect. How high can you build?", href:"skyscrapers/"},
     {t:"SKYSCRAPER 2",      c:"#6C8BFF", i:"🏙️", b:"Solo Arcade", m:"👤 Solo",       d:"A crane swings a block — tap to drop it onto the tower 🏙️ Same-size floors, line them up for a stable tower, cap each building with a roof. Dead-centre = PERFECT. Beat the platform high score!", go:"currentGame='sky2';SK2_phase='ready';render();"},
     {t:"MAZE MUNCHER",      c:"#FFE11A", i:"🟡", b:"Solo Arcade", m:"👤 Solo",       d:"Munch every dot in the maze while the chasers hunt you 👾 Grab a glowing power-pip to turn them blue and gobble them for big points. Arrows, swipe or on-screen pad. Beat the platform high score!", go:"currentGame='muncher';MZ_phase='ready';render();"},
+    {t:"DINO DASH",         c:"#9AA3B2", i:"🦖", b:"Solo Arcade", m:"👤 Solo",       d:"An endless runner 🌵 Tap to jump over cacti and hold DUCK to dive under birds. It speeds up the further you go — chase the platform high score!", go:"currentGame='dino';DR_phase='ready';render();"},
   ];
   const tile=g=>{
     const long=g.t.length>9?" long":"";
@@ -5399,6 +5687,8 @@ function zzHome(){
   try{ if(typeof SK2_phase!=="undefined") SK2_phase="ready"; }catch(e){}
   try{ if(typeof MZ_teardown==="function") MZ_teardown(); }catch(e){}
   try{ if(typeof MZ_phase!=="undefined") MZ_phase="ready"; }catch(e){}
+  try{ if(typeof DR_teardown==="function") DR_teardown(); }catch(e){}
+  try{ if(typeof DR_phase!=="undefined") DR_phase="ready"; }catch(e){}
   try{ if(typeof D_stopCanvasSync==="function") D_stopCanvasSync(); }catch(e){}
   try{ if(typeof EK_closeModal==="function") EK_closeModal(); }catch(e){}
   try{ document.body.classList.remove("typing-mode"); }catch(e){}
@@ -5430,6 +5720,7 @@ function render(){
   if(currentGame==="hippo"){renderHippo(); return;}
   if(currentGame==="sky2"){renderSkyscraper2(); return;}
   if(currentGame==="muncher"){renderMuncher(); return;}
+  if(currentGame==="dino"){renderDino(); return;}
 }
 
 // ═══════════════════════════════════════════════════════
