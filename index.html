@@ -6,8 +6,8 @@
 
 <!-- ── PRIMARY SEO ─────────────────────────────────────────────── -->
 <title>ZipZap Games — Free Multiplayer Party Games Online</title>
-<meta name="description" content="Play free multiplayer party games with friends online. BLITZ: name something in a category first. PSYCH: fool your friends with fake answers. BLUFF: the classic lying card game. CABO: the low-score memory card game. PICTIONARY: real-time draw & guess. TYPE: a typing speed race. EXPLODING KITTENS: the cute chaotic card game — solo or in a room. SUMO SMASH: mash to shove your rival out of the ring. HIPPO CHOMP: tap your hippo's mouth to gobble your colour before your rival. Plus BASKETBALL, SKYSCRAPERS and SKYSCRAPER 2: solo arcade games. No download needed — play instantly in your browser.">
-<meta name="keywords" content="multiplayer party game online, free browser game, word game with friends, bluffing game, psych game, blitz word game, bluff card game, cheat card game online, cabo card game online, exploding kittens online, exploding kittens free, pictionary online, drawing and guessing game, typing race game, typing speed test, basketball game online, free basketball shooting game, skyscraper stacking game, tower block game online, stack game, crane stacking game, build a tower game,hungry hippos game online, hippo game, tap game, hippo chomp, sumo game online, sumo tap battle, tap battle game, online party game, game to play with friends, no download game">
+<meta name="description" content="Play free multiplayer party games with friends online. BLITZ: name something in a category first. PSYCH: fool your friends with fake answers. BLUFF: the classic lying card game. CABO: the low-score memory card game. PICTIONARY: real-time draw & guess. TYPE: a typing speed race. EXPLODING KITTENS: the cute chaotic card game — solo or in a room. SUMO SMASH: mash to shove your rival out of the ring. HIPPO CHOMP: tap your hippo's mouth to gobble your colour before your rival. Plus BASKETBALL, SKYSCRAPERS, SKYSCRAPER 2 and MAZE MUNCHER: solo arcade games. No download needed — play instantly in your browser.">
+<meta name="keywords" content="multiplayer party game online, free browser game, word game with friends, bluffing game, psych game, blitz word game, bluff card game, cheat card game online, cabo card game online, exploding kittens online, exploding kittens free, pictionary online, drawing and guessing game, typing race game, typing speed test, basketball game online, free basketball shooting game, skyscraper stacking game, tower block game online, stack game, crane stacking game, build a tower game, maze game online, dot muncher game, arcade maze chase game,hungry hippos game online, hippo game, tap game, hippo chomp, sumo game online, sumo tap battle, tap battle game, online party game, game to play with friends, no download game">
 <meta name="author" content="ZipZap Games">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://zipzap-games.com/">
@@ -200,6 +200,19 @@
         "@type": "Game",
         "name": "Skyscraper 2",
         "description": "A crane-drop tower stacking game. A crane swings a same-size block back and forth; tap to drop it onto the tower and line it up for a stable build. Dead-centre drops score a perfect with a combo bonus, a flat roof caps off each building, and overhanging too far topples the tower. Play solo to beat the platform-wide high score.",
+        "url": "https://zipzap-games.com",
+        "genre": "Arcade Game",
+        "numberOfPlayers": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 1 },
+        "gamePlatform": "Web Browser"
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 13,
+      "item": {
+        "@type": "Game",
+        "name": "Maze Muncher",
+        "description": "An original maze-chase arcade game. Guide your muncher around a neon maze eating every dot while coloured creatures hunt you. Grab a glowing power-pip to turn the chasers edible for a few seconds and gobble them for big points. Clear the board to advance, with faster enemies each level. Arrow keys, swipe, or an on-screen pad. Play solo to beat the platform-wide high score.",
         "url": "https://zipzap-games.com",
         "genre": "Arcade Game",
         "numberOfPlayers": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 1 },
@@ -516,6 +529,8 @@ body.typing-mode #app{max-width:960px}
 .hp-tapbtn.flip{transform:rotate(180deg);margin-top:0;margin-bottom:12px}
 .hp-tapbtn.flip:active{transform:rotate(180deg) translateY(4px)}
 .hp-diff{background:var(--ca2);color:var(--te);border:2px solid var(--bd);padding:13px 6px;font-size:14px}
+.mz-pad{background:var(--ca2);color:var(--te);border:1px solid var(--bd);border-radius:12px;font-size:20px;font-weight:900;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif}
+.mz-pad:active{background:#FFE11A;color:#2a2400}
 </style>
 </head>
 <body>
@@ -548,6 +563,8 @@ body.typing-mode #app{max-width:960px}
     <p>A free single-player skyscraper stacking game (the classic phone stacker). A crane carries each block — tap to drop it and build the tower as high as you can. Perfect drops keep it wide; misses trim it down. <a href="/skyscrapers/" style="color:#7EC8FF">Play Skyscrapers</a>.</p>
     <h2 style="color:#6C8BFF;margin-top:24px">SKYSCRAPER 2 — Crane-Drop Tower Builder</h2>
     <p>A free single-player crane-drop tower stacking game. A crane swings a same-size block back and forth — tap to drop it onto the tower and line it up for a stable build. Dead-centre drops score a perfect with a combo bonus, a flat roof caps each building, and overhanging too far topples the tower. Beat the platform-wide high score. 1 player.</p>
+    <h2 style="color:#FFE11A;margin-top:24px">MAZE MUNCHER — Maze-Chase Arcade</h2>
+    <p>A free original single-player maze-chase arcade game. Guide your muncher around a neon maze eating every dot while coloured creatures hunt you. Grab a glowing power-pip to turn the chasers edible for a few seconds and gobble them for big points. Clear the board to advance, with faster enemies each level. Play with arrow keys, swipe, or the on-screen pad, and beat the platform-wide high score. 1 player.</p>
     <p style="margin-top:24px">Enable JavaScript to play at <strong>zipzap-games.com</strong></p>
   </div>
 </noscript>
@@ -4906,6 +4923,347 @@ function bindSkyscraper2(){
 }
 
 // ═══════════════════════════════════════════════════════
+// MAZE MUNCHER  (original maze-chase arcade — eat the dots,
+//   grab a power-pip to turn the chasers edible, clear the
+//   board. Original characters & maze; not a licensed clone.)
+// ═══════════════════════════════════════════════════════
+const MZ_COLS=19, MZ_ROWS=21, MZ_BESTKEY="zz_muncher_best";
+const MZ_ECOL=["#FF5A5A","#49C5FF","#FF9BD6"];       // original enemy colours
+let MZ_phase="ready";                                 // ready | play | over | win
+let MZ_cv=null, MZ_ctx=null, MZ_raf=null, MZ_last=0, MZ_acc=0, MZ_dpr=1;
+let MZ_W=380, MZ_H=460, MZ_CELL=18, MZ_OY=26, MZ_tunRow=10;
+let MZ_grid=[], MZ_dots=0, MZ_total=0, MZ_time=0;
+let MZ_player=null, MZ_enemies=[], MZ_pspawn=[18,9], MZ_espawn=[];
+let MZ_score=0, MZ_lives=3, MZ_level=1, MZ_best=0, MZ_hs={score:0,name:""};
+let MZ_frightUntil=-1, MZ_eatCombo=1, MZ_pauseUntil=0, MZ_msg="", MZ_recordPending=false;
+let MZ_keyHandler=null, MZ_mouth=0, MZ_touchStart=null;
+
+function MZ_sfx(kind){try{const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);const t=c.currentTime;
+  if(kind==="dot"){o.type="square";o.frequency.setValueAtTime(420+Math.random()*60,t);}
+  else if(kind==="pip"){o.type="triangle";o.frequency.setValueAtTime(300,t);o.frequency.exponentialRampToValueAtTime(620,t+.18);}
+  else if(kind==="eat"){o.type="square";o.frequency.setValueAtTime(500,t);o.frequency.exponentialRampToValueAtTime(950,t+.16);}
+  else if(kind==="die"){o.type="sawtooth";o.frequency.setValueAtTime(400,t);o.frequency.exponentialRampToValueAtTime(70,t+.5);}
+  else{o.type="triangle";o.frequency.setValueAtTime(600,t);o.frequency.exponentialRampToValueAtTime(1100,t+.3);}
+  g.gain.setValueAtTime(.04,t);g.gain.exponentialRampToValueAtTime(.001,t+(kind==="die"?.5:kind==="dot"?.07:.2));o.start(t);o.stop(t+.52);}catch(e){}}
+
+// ── maze (generated pillar lattice + side tunnel) ──
+function MZ_genMaze(){
+  MZ_grid=[]; MZ_total=0;
+  for(let r=0;r<MZ_ROWS;r++){ const row=[]; for(let c=0;c<MZ_COLS;c++){
+    const wall = r===0||c===0||r===MZ_ROWS-1||c===MZ_COLS-1 || (r%2===0 && c%2===0);
+    row.push(wall?"#":"."); } MZ_grid.push(row); }
+  MZ_tunRow=Math.floor(MZ_ROWS/2);                       // open corridor + side tunnel
+  for(let c=0;c<MZ_COLS;c++) MZ_grid[MZ_tunRow][c]=".";
+  MZ_grid[MZ_tunRow][0]=" "; MZ_grid[MZ_tunRow][MZ_COLS-1]=" ";
+  // power pips near the 4 corners
+  for(const [r,c] of [[1,1],[1,MZ_COLS-2],[MZ_ROWS-2,1],[MZ_ROWS-2,MZ_COLS-2]]) MZ_grid[r][c]="o";
+  // clear player + enemy home cells (no dots there)
+  const ctr=Math.floor(MZ_COLS/2);
+  MZ_pspawn=[MZ_ROWS-2,ctr];                              // odd row → can move sideways right away
+  MZ_espawn=[[MZ_tunRow-1,ctr],[MZ_tunRow-1,ctr-1],[MZ_tunRow-1,ctr+1]];   // odd row, all open
+  for(const [r,c] of [MZ_pspawn,...MZ_espawn]) if(MZ_grid[r][c]!=="#") MZ_grid[r][c]=" ";
+  for(const row of MZ_grid) for(const ch of row) if(ch==="."||ch==="o") MZ_total++;
+}
+function MZ_wrap(r,c){ if(r===MZ_tunRow){ if(c<0)c=MZ_COLS-1; else if(c>=MZ_COLS)c=0; } return [r,c]; }
+function MZ_wall(r,c){ [r,c]=MZ_wrap(r,c); if(r<0||r>=MZ_ROWS||c<0||c>=MZ_COLS)return true; return MZ_grid[r][c]==="#"; }
+function MZ_canMove(r,c,d){ return !MZ_wall(r+d.dy, c+d.dx); }
+function MZ_cellPx(r,c){ return { x:c*MZ_CELL+MZ_CELL/2, y:MZ_OY+r*MZ_CELL+MZ_CELL/2 }; }
+function MZ_entPx(e){
+  const a=MZ_cellPx(e.r,e.c);
+  if(!e.dir||(!e.dir.dx&&!e.dir.dy)||e.prog<=0) return a;
+  let nr=e.r+e.dir.dy, nc=e.c+e.dir.dx; if(e.r===MZ_tunRow&&(nc<0||nc>=MZ_COLS)) return a; // avoid wrap-draw jump
+  const bpx=MZ_cellPx(nr,nc);
+  return { x:a.x+(bpx.x-a.x)*e.prog, y:a.y+(bpx.y-a.y)*e.prog };
+}
+function MZ_frightened(){ return MZ_time<MZ_frightUntil; }
+
+function MZ_reset(full){
+  MZ_player={r:MZ_pspawn[0],c:MZ_pspawn[1],dir:{dx:0,dy:0},nextDir:{dx:0,dy:0},prog:0};
+  MZ_enemies=MZ_espawn.map((s,i)=>({r:s[0],c:s[1],home:s,dir:{dx:0,dy:-1},prog:0,col:MZ_ECOL[i],
+     offR:i===0?0:(i===1?0:2), offC:i===0?0:(i===1?3:-2),
+     corner:[[1,1],[1,MZ_COLS-2],[MZ_ROWS-2,MZ_COLS-2]][i], frozen:false, respawnAt:0}));
+  MZ_frightUntil=-1; MZ_eatCombo=1; MZ_pauseUntil=MZ_time+1.4; MZ_msg="READY!";
+}
+function MZ_startLevel(){ MZ_genMaze(); MZ_dots=MZ_total; MZ_reset(true); }
+
+// ── logic step (fixed 1/60) ──
+function MZ_enemySpeed(){ return 0.112 + (MZ_level-1)*0.004; }
+function MZ_step(dt){
+  MZ_time+=dt;
+  MZ_mouth=(MZ_mouth+dt*10)%1;
+  if(MZ_time<MZ_pauseUntil) return;
+  if(MZ_msg==="READY!") MZ_msg="";
+  // player
+  const p=MZ_player, pSpeed=0.135;
+  if(p.dir.dx||p.dir.dy||p.nextDir.dx||p.nextDir.dy){
+    if(p.prog===0){ // at a cell centre: decide
+      if((p.nextDir.dx||p.nextDir.dy)&&MZ_canMove(p.r,p.c,p.nextDir)) p.dir={...p.nextDir};
+      if(!MZ_canMove(p.r,p.c,p.dir)) p.dir={dx:0,dy:0};
+    }
+    if(p.dir.dx||p.dir.dy){
+      p.prog+=pSpeed;
+      if(p.prog>=1){ let nr=p.r+p.dir.dy,nc=p.c+p.dir.dx; [nr,nc]=MZ_wrap(nr,nc); p.r=nr;p.c=nc; p.prog=0;
+        const ch=MZ_grid[p.r][p.c];
+        if(ch==="."){ MZ_grid[p.r][p.c]=" "; MZ_dots--; MZ_score+=10; if(Math.random()<0.5)MZ_sfx("dot"); }
+        else if(ch==="o"){ MZ_grid[p.r][p.c]=" "; MZ_dots--; MZ_score+=50; MZ_frightUntil=MZ_time+6; MZ_eatCombo=1; MZ_sfx("pip"); }
+        if(MZ_dots<=0){ MZ_winLevel(); return; }
+      }
+    }
+  }
+  // enemies
+  const espd=MZ_frightened()?0.075:MZ_enemySpeed();
+  for(const e of MZ_enemies){
+    if(e.frozen){ if(MZ_time>=e.respawnAt){ e.frozen=false; e.r=e.home[0]; e.c=e.home[1]; e.dir={dx:0,dy:-1}; e.prog=0; } continue; }
+    if(e.prog===0) e.dir=MZ_enemyDir(e);
+    if(e.dir.dx||e.dir.dy){ e.prog+=espd;
+      if(e.prog>=1){ let nr=e.r+e.dir.dy,nc=e.c+e.dir.dx; [nr,nc]=MZ_wrap(nr,nc); e.r=nr;e.c=nc; e.prog=0; e.dir=MZ_enemyDir(e); }
+    }
+  }
+  // collisions
+  const pp=MZ_entPx(p);
+  for(const e of MZ_enemies){ if(e.frozen)continue; const ep=MZ_entPx(e);
+    if(Math.hypot(pp.x-ep.x,pp.y-ep.y) < MZ_CELL*0.62){
+      if(MZ_frightened()){ MZ_score+=200*MZ_eatCombo; MZ_eatCombo=Math.min(8,MZ_eatCombo*2); e.frozen=true; e.respawnAt=MZ_time+3; MZ_msg="+"+(200*(MZ_eatCombo/2)); MZ_sfx("eat"); }
+      else { MZ_die(); return; }
+    }
+  }
+}
+function MZ_enemyDir(e){
+  const opts=[[0,-1],[-1,0],[0,1],[1,0]];   // up,left,down,right
+  const rev=[-e.dir.dx,-e.dir.dy];
+  let cand=opts.filter(([dx,dy])=> !(dx===rev[0]&&dy===rev[1]) && MZ_canMove(e.r,e.c,{dx,dy}));
+  if(!cand.length) cand=opts.filter(([dx,dy])=>MZ_canMove(e.r,e.c,{dx,dy}));
+  if(!cand.length) return {dx:0,dy:0};
+  if(MZ_frightened()){ const p=cand[(Math.random()*cand.length)|0]; return {dx:p[0],dy:p[1]}; }
+  const scatter=(MZ_time%27)<7;
+  const tgt = scatter ? (e.corner||[1,1]) : [MZ_player.r+e.offR, MZ_player.c+e.offC];
+  let best=cand[0],bd=1e9;
+  for(const [dx,dy] of cand){ const nr=e.r+dy,nc=e.c+dx; const d=(nr-tgt[0])**2+(nc-tgt[1])**2; if(d<bd){bd=d;best=[dx,dy];} }
+  return {dx:best[0],dy:best[1]};
+}
+function MZ_die(){
+  MZ_lives--; MZ_sfx("die");
+  if(MZ_lives<=0){ MZ_gameOver(); return; }
+  MZ_reset(false);
+}
+function MZ_winLevel(){
+  MZ_level++; MZ_score+=200; MZ_msg="LEVEL "+MZ_level+"!"; MZ_sfx("win");
+  try{zzFireworks(false);}catch(e){}
+  MZ_startLevel();
+}
+function MZ_gameOver(){
+  MZ_phase="over";
+  if(MZ_score>MZ_best){ MZ_best=MZ_score; try{localStorage.setItem(MZ_BESTKEY,String(MZ_best));}catch(e){} }
+  if(MZ_score>(MZ_hs.score||0)) MZ_recordPending=true;
+  if(MZ_raf){cancelAnimationFrame(MZ_raf);MZ_raf=null;}
+  setTimeout(()=>{ if(MZ_phase==="over")render(); }, 700);
+}
+function MZ_loadHigh(){
+  try{ MZ_best=parseInt(localStorage.getItem(MZ_BESTKEY)||"0",10)||0; }catch(e){}
+  try{ db.ref("muncher/high").once("value").then(s=>{ const v=s.val(); if(v&&typeof v.score==="number"){ MZ_hs=v; if(MZ_phase==="ready"||MZ_phase==="over")render(); } }).catch(()=>{}); }catch(e){}
+}
+function MZ_saveRecord(name){
+  const sc=MZ_score, nm=(name||"Anonymous").slice(0,18); MZ_hs={score:sc,name:nm}; MZ_recordPending=false;
+  try{ db.ref("muncher/high").transaction(cur=>{ if(!cur||typeof cur.score!=="number"||sc>=cur.score)return {score:sc,name:nm}; return cur; }).catch(()=>{}); }catch(e){}
+  toast("🏆 New platform record saved!","ok"); render();
+}
+
+// ── input ──
+function MZ_setDir(dx,dy){ if(MZ_player) MZ_player.nextDir={dx,dy}; }
+
+// ── drawing ──
+function MZ_draw(){
+  const c=MZ_ctx; c.fillStyle="#000"; c.fillRect(0,0,MZ_W,MZ_H);
+  // maze
+  for(let r=0;r<MZ_ROWS;r++)for(let col=0;col<MZ_COLS;col++){ const ch=MZ_grid[r][col]; const px=col*MZ_CELL, py=MZ_OY+r*MZ_CELL;
+    if(ch==="#"){ c.fillStyle="#1430c8"; c.beginPath(); if(c.roundRect)c.roundRect(px+2,py+2,MZ_CELL-4,MZ_CELL-4,4); else c.rect(px+2,py+2,MZ_CELL-4,MZ_CELL-4); c.fill();
+      c.strokeStyle="#3f5cff"; c.lineWidth=1.5; c.stroke(); }
+    else if(ch==="."){ c.fillStyle="#ffd9a8"; c.beginPath(); c.arc(px+MZ_CELL/2,py+MZ_CELL/2,Math.max(1.5,MZ_CELL*0.09),0,6.28); c.fill(); }
+    else if(ch==="o"){ const pulse=0.7+0.3*Math.sin(MZ_time*6); c.fillStyle="#ffe9c8"; c.globalAlpha=pulse; c.beginPath(); c.arc(px+MZ_CELL/2,py+MZ_CELL/2,MZ_CELL*0.28,0,6.28); c.fill(); c.globalAlpha=1; }
+  }
+  // enemies
+  for(const e of MZ_enemies){ const p=MZ_entPx(e); MZ_drawEnemy(p.x,p.y,e); }
+  // player
+  if(MZ_player){ const p=MZ_entPx(MZ_player); MZ_drawHero(p.x,p.y); }
+  // HUD
+  c.fillStyle="#FFE11A"; c.font="900 15px Nunito,sans-serif"; c.textAlign="left"; c.textBaseline="middle";
+  c.fillText(String(MZ_score),8,13);
+  c.textAlign="center"; c.fillStyle="#fff"; c.font="900 11px Nunito,sans-serif";
+  c.fillText("LVL "+MZ_level+" · BEST "+Math.max(MZ_best,MZ_score),MZ_W/2,13);
+  c.textAlign="right"; for(let i=0;i<MZ_lives;i++){ c.fillStyle="#FFE11A"; c.beginPath(); c.arc(MZ_W-12-i*16,13,6,0,6.28); c.fill(); }
+  // centre message
+  if(MZ_msg){ c.textAlign="center"; c.fillStyle=MZ_msg[0]==="R"?"#FFE11A":MZ_msg[0]==="L"?"#8affa0":"#fff"; c.font="900 20px Righteous,Nunito,sans-serif";
+    c.fillText(MZ_msg, MZ_W/2, MZ_OY+MZ_tunRow*MZ_CELL+MZ_CELL+4); }
+}
+function MZ_drawHero(x,y){
+  const c=MZ_ctx, R=MZ_CELL*0.46, d=MZ_player.dir;
+  c.save(); c.translate(x,y);
+  // round body + little ears (original blob creature, not a wedge)
+  c.fillStyle="#FFE11A"; c.beginPath(); c.arc(0,0,R,0,6.28); c.fill();
+  c.beginPath(); c.arc(-R*0.52,-R*0.72,R*0.24,0,6.28); c.arc(R*0.52,-R*0.72,R*0.24,0,6.28); c.fill();
+  c.fillStyle="#f0c800"; c.beginPath(); c.arc(-R*0.52,-R*0.72,R*0.1,0,6.28); c.arc(R*0.52,-R*0.72,R*0.1,0,6.28); c.fill();
+  // eyes looking toward movement
+  const ex=(d.dx||0)*R*0.12, ey=(d.dy||0)*R*0.12;
+  c.fillStyle="#fff"; c.beginPath(); c.arc(-R*0.3,-R*0.12,R*0.25,0,6.28); c.arc(R*0.3,-R*0.12,R*0.25,0,6.28); c.fill();
+  c.fillStyle="#1a1a2a"; c.beginPath(); c.arc(-R*0.3+ex,-R*0.12+ey,R*0.12,0,6.28); c.arc(R*0.3+ex,-R*0.12+ey,R*0.12,0,6.28); c.fill();
+  // small chomping mouth (opens when moving)
+  const open=(d.dx||d.dy)? (0.35+0.65*Math.abs(Math.sin(MZ_time*14))) : 0.3;
+  c.fillStyle="#9c5a00"; c.beginPath(); c.ellipse(0,R*0.45,R*0.3,R*0.26*open,0,0,6.28); c.fill();
+  c.restore();
+}
+function MZ_drawEnemy(x,y,e){
+  const c=MZ_ctx, R=MZ_CELL*0.44; const fr=MZ_frightened()&&!e.frozen;
+  c.save(); c.translate(x,y);
+  if(e.frozen){ // eyes only (returning home)
+    c.fillStyle="#cfe0ff"; c.beginPath(); c.arc(-R*0.3,-R*0.1,R*0.3,0,6.28); c.arc(R*0.3,-R*0.1,R*0.3,0,6.28); c.fill();
+    c.fillStyle="#1430c8"; c.beginPath(); c.arc(-R*0.3,0,R*0.14,0,6.28); c.arc(R*0.3,0,R*0.14,0,6.28); c.fill(); c.restore(); return;
+  }
+  const body=fr?"#2634e8":e.col;
+  // round creature body with little antennae + feet (distinct silhouette)
+  c.fillStyle=body; c.beginPath(); c.arc(0,0,R,0,6.28); c.fill();
+  c.strokeStyle=body; c.lineWidth=2;
+  c.beginPath(); c.moveTo(-R*0.4,-R*0.8); c.lineTo(-R*0.55,-R*1.15); c.moveTo(R*0.4,-R*0.8); c.lineTo(R*0.55,-R*1.15); c.stroke();
+  c.fillStyle=body; c.beginPath(); c.arc(-R*0.55,-R*1.2,R*0.12,0,6.28); c.arc(R*0.55,-R*1.2,R*0.12,0,6.28); c.fill();
+  for(const fx of [-0.5,0,0.5]){ c.beginPath(); c.arc(fx*R,R*0.95,R*0.16,0,Math.PI); c.fill(); }
+  if(fr){ c.fillStyle="#9fe0ff"; c.beginPath(); c.arc(-R*0.3,-R*0.15,R*0.14,0,6.28); c.arc(R*0.3,-R*0.15,R*0.14,0,6.28); c.fill();
+    c.strokeStyle="#9fe0ff"; c.lineWidth=2; c.beginPath(); for(let i=-2;i<=2;i++)c.lineTo(i*R*0.28, R*0.35+(i%2?3:-1)); c.stroke(); }
+  else { const dd=e.dir; const ex=(dd.dx||0)*R*0.18, ey=(dd.dy||0)*R*0.18;
+    c.fillStyle="#fff"; c.beginPath(); c.arc(-R*0.32,-R*0.1,R*0.26,0,6.28); c.arc(R*0.32,-R*0.1,R*0.26,0,6.28); c.fill();
+    c.fillStyle="#1a1a2a"; c.beginPath(); c.arc(-R*0.32+ex,-R*0.1+ey,R*0.13,0,6.28); c.arc(R*0.32+ex,-R*0.1+ey,R*0.13,0,6.28); c.fill(); }
+  c.restore();
+}
+
+// ── loop ──
+function MZ_loop(now){
+  if(!MZ_ctx){MZ_raf=null;return;}
+  let dt=(now-MZ_last)/1000; MZ_last=now; if(dt>0.1)dt=0.1; MZ_acc+=dt;
+  let it=0; while(MZ_acc>=1/60 && it<4){ if(MZ_phase==="play")MZ_step(1/60); MZ_acc-=1/60; it++; }
+  MZ_draw();
+  MZ_raf=requestAnimationFrame(MZ_loop);
+}
+
+// ── screens ──
+function MZ_scrReady(){
+  const best=MZ_hs.score>0?`🏆 Platform best: <b style="color:#FFD23F">${MZ_hs.score}</b>${MZ_hs.name?" by "+MZ_hs.name:""}`:"Be the first to set a platform record!";
+  const yb=MZ_best>0?`<div style="color:var(--mu);font-size:12px;margin-top:4px">Your best: ${MZ_best}</div>`:"";
+  return `
+<div class="fade" style="padding-top:20px">
+  <button class="btn" id="mz-back" style="background:var(--ca2);color:var(--mu);border:1px solid var(--bd);width:auto;padding:8px 16px;font-size:13px;margin-bottom:22px">← Back</button>
+  <div style="text-align:center;margin-bottom:22px">
+    <div style="font-size:40px">🟡</div>
+    <div class="hf" style="font-size:38px;color:#FFE11A;letter-spacing:1px;line-height:1;text-shadow:0 0 50px rgba(255,225,26,.4)">MAZE MUNCHER</div>
+    <div style="color:var(--mu);margin-top:8px;font-size:14px">Eat every dot — don't get caught 👾</div>
+    <div style="color:var(--te);margin-top:10px;font-size:13px;font-weight:800">${best}</div>${yb}
+  </div>
+  <div class="card" style="margin-bottom:18px;font-size:13px;color:var(--mu);line-height:1.7">
+    <b style="color:var(--te)">How to play</b><br>
+    • <b>Arrow keys / WASD</b>, swipe, or the on-screen pad to move.<br>
+    • Eat all the dots to clear the maze.<br>
+    • Grab a glowing <b style="color:#ffe9c8">power-pip</b> to turn the chasers blue — then eat them for big points!<br>
+    • Getting caught costs a life. You have 3.
+  </div>
+  <button class="btn" id="mz-start" style="background:#FFE11A;color:#2a2400;font-size:18px;padding:16px">▶ Start</button>
+</div>`;}
+function MZ_scrGame(){
+  return `
+<div class="fade" style="padding-top:12px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <button class="btn" id="mz-back" style="background:var(--ca2);color:var(--mu);border:1px solid var(--bd);width:auto;padding:7px 13px;font-size:12px">← Quit</button>
+    <div style="font-weight:900;color:var(--mu);font-size:13px">Swipe / arrows / pad</div>
+  </div>
+  <div id="mz-arena" style="border-radius:16px;overflow:hidden;line-height:0;background:#000;box-shadow:0 10px 30px rgba(0,0,0,.5)">
+    <canvas id="mz-cv" style="display:block;width:100%;touch-action:none"></canvas>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,56px);grid-template-rows:repeat(2,52px);gap:6px;justify-content:center;margin-top:12px">
+    <div></div>
+    <button class="mz-pad" data-d="U" style="grid-column:2">▲</button><div></div>
+    <button class="mz-pad" data-d="L">◀</button><button class="mz-pad" data-d="D">▼</button><button class="mz-pad" data-d="R">▶</button>
+  </div>
+</div>`;}
+function MZ_scrOver(){
+  const rec=MZ_recordPending;
+  setTimeout(()=>{try{playSfx(rec?"win":"fool");}catch(e){} if(rec)try{zzWin("muncher-rec",true);}catch(e){}},160);
+  const recordInput = rec
+    ? `<div class="card" style="margin:18px 0"><span class="lbl">New platform record! Add your name</span>
+         <div class="row"><input class="inp" id="mz-name" placeholder="Your name" maxlength="18" value="${(myName||'').replace(/"/g,'')}" style="flex:1;border-color:#FFD23F">
+         <button class="btn" id="mz-save" style="background:#FFD23F;color:#3a2a00;width:auto;padding:12px 18px;flex-shrink:0">Save 🏆</button></div></div>` : "";
+  return `
+<div class="fade" style="padding-top:36px;text-align:center">
+  ${ZZ_HOMEBTN}
+  <div style="font-size:56px;margin-bottom:2px">${rec?"🏆":"👾"}</div>
+  <div class="hf" style="font-size:30px;color:#FFE11A;text-shadow:0 0 40px rgba(255,225,26,.4)">${rec?"NEW RECORD!":"Game Over"}</div>
+  <div style="margin-top:14px"><div class="hf" style="font-size:56px;color:#FFE11A">${MZ_score}</div>
+    <div style="color:var(--mu);font-size:13px;margin-top:2px">reached level ${MZ_level} · your best ${MZ_best}</div>
+    <div style="color:var(--te);font-size:13px;font-weight:800;margin-top:8px">🏆 Platform best: ${MZ_hs.score||0}${MZ_hs.name?" by "+MZ_hs.name:""}</div></div>
+  ${recordInput}
+  <div style="margin-top:24px">
+    <button class="btn" id="mz-again" style="background:#FFE11A;color:#2a2400;font-size:17px;padding:15px;margin-bottom:12px">🔁 Play Again</button>
+    <button class="btn" id="mz-menu" style="background:var(--ca2);color:var(--te);border:1px solid var(--bd);font-size:15px;padding:13px">Back to start</button>
+  </div>
+</div>`;}
+
+// ── lifecycle ──
+function MZ_start(){
+  MZ_teardown();
+  MZ_score=0; MZ_lives=3; MZ_level=1; MZ_time=0; MZ_recordPending=false;
+  MZ_phase="play"; MZ_startLevel(); render();
+}
+function MZ_teardown(){
+  if(MZ_raf){cancelAnimationFrame(MZ_raf);MZ_raf=null;}
+  if(MZ_keyHandler){document.removeEventListener("keydown",MZ_keyHandler);MZ_keyHandler=null;}
+  try{zzStopFireworks();}catch(e){}
+  MZ_ctx=null; MZ_cv=null;
+}
+function renderMuncher(){
+  const app=document.getElementById("app"); if(!app)return;
+  if(MZ_phase==="ready") app.innerHTML=MZ_scrReady();
+  else if(MZ_phase==="over") app.innerHTML=MZ_scrOver();
+  else app.innerHTML=MZ_scrGame();
+  bindMuncher();
+}
+function bindMuncher(){
+  const $=id=>document.getElementById(id),on=(id,fn)=>{const el=$(id);if(el)el.onclick=fn;};
+  on("mz-back",()=>{ if(MZ_phase==="play"){ MZ_teardown(); MZ_phase="ready"; render(); } else { MZ_teardown(); MZ_phase="ready"; currentGame=null; gs=null; render(); } });
+  on("mz-start",()=>MZ_start());
+  on("mz-again",()=>MZ_start());
+  on("mz-menu",()=>{ MZ_teardown(); MZ_phase="ready"; render(); });
+  on("mz-save",()=>{ MZ_saveRecord($("mz-name")?.value.trim()); });
+  if(MZ_phase==="ready"){ MZ_loadHigh(); }
+
+  const cv=$("mz-cv");
+  if(cv){
+    MZ_cv=cv; const arena=$("mz-arena");
+    const availW=Math.round(arena.clientWidth||360);
+    const vh=window.innerHeight||700;
+    MZ_CELL=Math.max(12,Math.min(24, Math.floor(availW/MZ_COLS), Math.floor((vh*0.62-MZ_OY)/MZ_ROWS)));
+    MZ_W=MZ_COLS*MZ_CELL; MZ_H=MZ_ROWS*MZ_CELL+MZ_OY+4;
+    MZ_dpr=Math.min(2,window.devicePixelRatio||1);
+    cv.width=MZ_W*MZ_dpr; cv.height=MZ_H*MZ_dpr; cv.style.width=MZ_W+"px"; cv.style.height=MZ_H+"px";
+    arena.style.width=MZ_W+"px"; arena.style.margin="0 auto";
+    MZ_ctx=cv.getContext("2d"); MZ_ctx.setTransform(MZ_dpr,0,0,MZ_dpr,0,0);
+    if(!MZ_ctx.roundRect)MZ_ctx.roundRect=function(x,y,w,h,r){this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);return this;};
+    if(!MZ_grid.length) MZ_startLevel();
+    // input
+    MZ_keyHandler=ev=>{ let d=null;
+      if(ev.key==="ArrowUp"||ev.key==="w"||ev.key==="W")d=[0,-1];
+      else if(ev.key==="ArrowDown"||ev.key==="s"||ev.key==="S")d=[0,1];
+      else if(ev.key==="ArrowLeft"||ev.key==="a"||ev.key==="A")d=[-1,0];
+      else if(ev.key==="ArrowRight"||ev.key==="d"||ev.key==="D")d=[1,0];
+      if(d){ ev.preventDefault(); MZ_setDir(d[0],d[1]); } };
+    document.addEventListener("keydown",MZ_keyHandler);
+    const pos=t=>({x:t.clientX,y:t.clientY});
+    cv.onpointerdown=e=>{ MZ_touchStart=pos(e); };
+    cv.onpointerup=e=>{ if(!MZ_touchStart)return; const q=pos(e); const dx=q.x-MZ_touchStart.x, dy=q.y-MZ_touchStart.y; MZ_touchStart=null;
+      if(Math.abs(dx)<10&&Math.abs(dy)<10)return;
+      if(Math.abs(dx)>Math.abs(dy)) MZ_setDir(dx>0?1:-1,0); else MZ_setDir(0,dy>0?1:-1); };
+    document.querySelectorAll(".mz-pad").forEach(btn=>{ btn.onpointerdown=e=>{ e.preventDefault(); const d=btn.getAttribute("data-d");
+      MZ_setDir(d==="L"?-1:d==="R"?1:0, d==="U"?-1:d==="D"?1:0); }; });
+    if(MZ_raf)cancelAnimationFrame(MZ_raf);
+    MZ_last=performance.now(); MZ_acc=0; MZ_raf=requestAnimationFrame(MZ_loop);
+  } else if(MZ_raf){cancelAnimationFrame(MZ_raf);MZ_raf=null;}
+}
+
+// ═══════════════════════════════════════════════════════
 // HOME SCREEN
 // ═══════════════════════════════════════════════════════
 function scrHome(){
@@ -4922,6 +5280,7 @@ function scrHome(){
     {t:"BASKETBALL",        c:"#E8622C", i:"🏀", b:"Solo Arcade", m:"👤 Solo",       d:"Drag to aim, release to shoot 🏀 Sink it from a brand-new spot every score. Chase your best streak, unlock 12 ball skins.", href:"hoops/"},
     {t:"SKYSCRAPERS",       c:"#7EC8FF", i:"🏗️", b:"Solo Arcade", m:"👤 Solo",       d:"A crane carries each block 🏗️ Tap to drop it and stack the tower sky-high. Nail it dead-centre for a perfect. How high can you build?", href:"skyscrapers/"},
     {t:"SKYSCRAPER 2",      c:"#6C8BFF", i:"🏙️", b:"Solo Arcade", m:"👤 Solo",       d:"A crane swings a block — tap to drop it onto the tower 🏙️ Same-size floors, line them up for a stable tower, cap each building with a roof. Dead-centre = PERFECT. Beat the platform high score!", go:"currentGame='sky2';SK2_phase='ready';render();"},
+    {t:"MAZE MUNCHER",      c:"#FFE11A", i:"🟡", b:"Solo Arcade", m:"👤 Solo",       d:"Munch every dot in the maze while the chasers hunt you 👾 Grab a glowing power-pip to turn them blue and gobble them for big points. Arrows, swipe or on-screen pad. Beat the platform high score!", go:"currentGame='muncher';MZ_phase='ready';render();"},
   ];
   const tile=g=>{
     const long=g.t.length>9?" long":"";
@@ -5013,6 +5372,8 @@ function zzHome(){
   try{ if(typeof HP_phase!=="undefined") HP_phase="setup"; }catch(e){}
   try{ if(typeof SK2_teardown==="function") SK2_teardown(); }catch(e){}
   try{ if(typeof SK2_phase!=="undefined") SK2_phase="ready"; }catch(e){}
+  try{ if(typeof MZ_teardown==="function") MZ_teardown(); }catch(e){}
+  try{ if(typeof MZ_phase!=="undefined") MZ_phase="ready"; }catch(e){}
   try{ if(typeof D_stopCanvasSync==="function") D_stopCanvasSync(); }catch(e){}
   try{ if(typeof EK_closeModal==="function") EK_closeModal(); }catch(e){}
   try{ document.body.classList.remove("typing-mode"); }catch(e){}
@@ -5043,6 +5404,7 @@ function render(){
   if(currentGame==="sumo") {renderSumo(); return;}
   if(currentGame==="hippo"){renderHippo(); return;}
   if(currentGame==="sky2"){renderSkyscraper2(); return;}
+  if(currentGame==="muncher"){renderMuncher(); return;}
 }
 
 // ═══════════════════════════════════════════════════════
