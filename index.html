@@ -5312,10 +5312,10 @@ let DR_phase="ready";                                  // ready | play | over
 let DR_cv=null, DR_ctx=null, DR_raf=null, DR_last=0, DR_dpr=1;
 let DR_W=600, DR_H=220, DR_GROUND=186;
 let DR_dist=0, DR_score=0, DR_best=0, DR_hs={score:0,name:""}, DR_recordPending=false;
-let DR_y=0, DR_vy=0, DR_onGround=true, DR_duck=false, DR_run=0;
+let DR_y=0, DR_vy=0, DR_onGround=true, DR_duck=false, DR_run=0, DR_jumps=0;
 let DR_obs=[], DR_nextGap=0, DR_speed=330, DR_night=false, DR_flash=0;
 let DR_keyDown=null, DR_keyUp=null, DR_startAt=0;
-const DR_G=2600, DR_JUMP=800, DR_X=48;
+const DR_G=2600, DR_JUMP1=700, DR_JUMP2=660, DR_X=48;
 
 function DR_sfx(kind){try{const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);const t=c.currentTime;
   if(kind==="jump"){o.type="square";o.frequency.setValueAtTime(520,t);o.frequency.exponentialRampToValueAtTime(900,t+.1);}
@@ -5324,19 +5324,23 @@ function DR_sfx(kind){try{const c=new(window.AudioContext||window.webkitAudioCon
   g.gain.setValueAtTime(.045,t);g.gain.exponentialRampToValueAtTime(.001,t+(kind==="over"?.42:.14));o.start(t);o.stop(t+.44);}catch(e){}}
 
 function DR_resetRun(){
-  DR_dist=0; DR_score=0; DR_y=0; DR_vy=0; DR_onGround=true; DR_duck=false; DR_run=0;
+  DR_dist=0; DR_score=0; DR_y=0; DR_vy=0; DR_onGround=true; DR_duck=false; DR_run=0; DR_jumps=0;
   DR_obs=[]; DR_speed=330; DR_nextGap=DR_W*0.9; DR_night=false; DR_recordPending=false; DR_flash=0;
 }
 function DR_jump(){
   if(DR_phase!=="play")return;
-  if(DR_onGround){ DR_vy=DR_JUMP; DR_onGround=false; DR_duck=false; DR_sfx("jump"); }
+  if(DR_onGround){ DR_vy=DR_JUMP1; DR_onGround=false; DR_duck=false; DR_jumps=1; DR_sfx("jump"); }
+  else if(DR_jumps<2){ DR_vy=Math.max(DR_vy,DR_JUMP2); DR_jumps=2; DR_sfx("jump"); }   // double jump → clear tall obstacles
 }
 function DR_setDuck(on){ if(DR_phase==="play") DR_duck=on && DR_onGround; }
 
 function DR_spawn(){
-  const bird = DR_score>150 && Math.random()<0.34;
-  if(bird){ const h=20; DR_obs.push({type:"bird", x:DR_W+20, w:34, h, y:DR_GROUND-56, flap:0}); }
-  else { const n=1+((Math.random()*3)|0); const w=12+n*7, h=24+((Math.random()*16)|0);
+  const r=Math.random();
+  if(DR_score>150 && r<0.28){ DR_obs.push({type:"bird", x:DR_W+20, w:34, h:20, y:DR_GROUND-56, flap:0}); }
+  else if(DR_score>70 && r<0.56){                 // TALL obstacle → needs a double jump
+    const h=96+((Math.random()*34)|0), w=20+((Math.random()*8)|0);
+    DR_obs.push({type:"cactus", x:DR_W+20, w, h, y:DR_GROUND-h, bumps:3, tall:true}); }
+  else { const n=1+((Math.random()*3)|0); const w=12+n*7, h=24+((Math.random()*30)|0);
     DR_obs.push({type:"cactus", x:DR_W+20, w, h, y:DR_GROUND-h, bumps:n}); }
 }
 function DR_box(){ const h=DR_duck?22:40, w=DR_duck?46:34, by=DR_GROUND-DR_y;
@@ -5345,7 +5349,7 @@ function DR_hit(a,b){ return a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.
 
 function DR_step(dt){
   DR_run+=dt* DR_speed*0.06;
-  DR_speed=Math.min(760, 330 + DR_dist*0.00055);
+  DR_speed=Math.min(1200, 320 + DR_dist*0.0008);   // keeps ramping up for a long time
   DR_dist+=DR_speed*dt;
   const ns=Math.floor(DR_dist/16);
   if(ns>DR_score && ns%100===0) DR_sfx("point");
@@ -5353,12 +5357,15 @@ function DR_step(dt){
   const night=Math.floor(DR_score/400)%2===1; if(night!==DR_night){ DR_night=night; DR_flash=1; }
   if(DR_flash>0)DR_flash=Math.max(0,DR_flash-dt*2);
   // vertical
-  if(!DR_onGround){ DR_vy-=DR_G*dt; DR_y+=DR_vy*dt; if(DR_y<=0){ DR_y=0; DR_vy=0; DR_onGround=true; } }
+  if(!DR_onGround){ DR_vy-=DR_G*dt; DR_y+=DR_vy*dt; if(DR_y<=0){ DR_y=0; DR_vy=0; DR_onGround=true; DR_jumps=0; } }
   // obstacles
   for(const o of DR_obs){ o.x-=DR_speed*dt; if(o.type==="bird")o.flap=(o.flap+dt*10)%2; }
   DR_obs=DR_obs.filter(o=>o.x+o.w>-10);
   DR_nextGap-=DR_speed*dt;
-  if(DR_nextGap<=0){ DR_spawn(); const minG=Math.max(190, 560-DR_speed*0.35); DR_nextGap=minG+Math.random()*220; }
+  if(DR_nextGap<=0){ DR_spawn();
+    // gap grows with distance (and always leaves room to land a double jump at speed)
+    const base=Math.max(DR_speed*0.85, 260) + Math.min(650, DR_dist*0.013);
+    DR_nextGap=base+Math.random()*220; }
   // collision
   const pb=DR_box();
   for(const o of DR_obs){ if(DR_hit(pb,{x:o.x,y:o.y,w:o.w,h:o.h})){ DR_over(); return; } }
@@ -5406,7 +5413,7 @@ function DR_draw(){
   c.fillText(String(DR_score).padStart(5,"0"), DR_W-10, 10);
   c.font="900 11px Nunito,sans-serif"; c.fillStyle=night?"rgba(230,235,245,.6)":"rgba(58,66,84,.6)";
   c.fillText("HI "+String(Math.max(DR_best,DR_score)).padStart(5,"0"), DR_W-10, 30);
-  if(DR_phase==="play"&&DR_dist<340){ c.textAlign="center"; c.fillStyle=fg; c.font="900 13px Nunito,sans-serif"; c.fillText("TAP / SPACE to jump · hold DUCK to duck", DR_W/2, DR_H-20); }
+  if(DR_phase==="play"&&DR_dist<340){ c.textAlign="center"; c.fillStyle=fg; c.font="900 13px Nunito,sans-serif"; c.fillText("TAP to jump · tap again mid-air for tall cacti · hold DUCK", DR_W/2, DR_H-20); }
 }
 function DR_drawCactus(o,fg){
   const c=DR_ctx, x=o.x, y=o.y, w=o.w, h=o.h;
@@ -5484,7 +5491,7 @@ function DR_scrReady(){
   </div>
   <div class="card" style="margin-bottom:18px;font-size:13px;color:var(--mu);line-height:1.7">
     <b style="color:var(--te)">How to play</b><br>
-    • <b>Tap / Space / ▲</b> to jump over cacti.<br>
+    • <b>Tap / Space / ▲</b> to jump over cacti — <b>tap again mid-air</b> (double jump) to clear the <b>tall</b> ones.<br>
     • <b>Hold DUCK / ▼</b> to duck under birds.<br>
     • It gets faster the further you go — how far can you run?
   </div>
@@ -5555,7 +5562,7 @@ function bindDino(){
   if(cv){
     DR_cv=cv; const arena=$("dr-arena");
     DR_W=Math.round(arena.clientWidth||600);
-    DR_H=Math.round(Math.max(210,Math.min(280, DR_W*0.56)));
+    DR_H=Math.round(Math.max(240,Math.min(340, DR_W*0.68, (window.innerHeight||700)*0.6)));
     DR_GROUND=DR_H-34;
     DR_dpr=Math.min(2,window.devicePixelRatio||1);
     cv.width=DR_W*DR_dpr; cv.height=DR_H*DR_dpr; cv.style.height=DR_H+"px";
