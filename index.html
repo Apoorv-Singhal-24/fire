@@ -4010,7 +4010,7 @@ function SM_scrOver(){
   const win=gs.winner;
   const iWon=win===meIdx;
   const wp=gs.players[win];
-  setTimeout(()=>{try{playSfx(iWon?'win':'fool');}catch(e){}if(iWon)zzWin('sumo-fin-'+(roomCode||SM_diff),true);},200);
+  setTimeout(()=>{try{playSfx(iWon?'win':'fool');}catch(e){}if(iWon && gs && gs.phase==="over")zzWin('sumo-fin-'+(roomCode||SM_diff),true);},200);
   return `
 <div class="fade" style="padding-top:40px;text-align:center">${ZZ_HOMEBTN}
   <div style="font-size:64px;margin-bottom:6px">${iWon?"🏆":"😤"}</div>
@@ -4030,6 +4030,7 @@ function SM_scrOver(){
 
 // ── entry actions ──
 function SM_startSolo(diff){
+  try{zzCelebrationClear();}catch(e){}
   SM_teardown();
   SM_mode="solo";SM_diff=diff;isHost=true;roomCode="";
   SM_myTaps=0;SM_botTaps=0;SM_botAcc=0;SM_burst=0;SM_localPos=0;SM_dispPos=0;SM_tapTimes=[];
@@ -4082,6 +4083,7 @@ function SM_startWriter(){
 }
 function SM_writeState(){ if(isHost){gs.pos=SM_localPos;SM_stRef().set(gs);} }
 function SM_hostStart(){
+  try{zzCelebrationClear();}catch(e){}
   gs.players.forEach(p=>p.score=0);
   gs.round=1;gs.roundWinner=null;gs.winner=null;
   gs.phase="count";gs.startAt=ms()+SM_COUNT;
@@ -4551,7 +4553,7 @@ function HP_scrOver(){
   else if(HP_winner==="bottom"){title=two?"PINK WINS!":"YOU WIN!";col="#FF4D8D";emoji="🏆";}
   else{title=two?"TEAL WINS!":(HP_DIFF[HP_diff].nm+" WINS!");col="#2DD4BF";emoji=two?"🏆":"😤";}
   const iWon=!two&&HP_winner==="bottom";
-  setTimeout(()=>{try{playSfx(iWon?"win":"fool");}catch(e){} if(iWon)zzWin("hippo-"+HP_diff,true);},180);
+  setTimeout(()=>{try{playSfx(iWon?"win":"fool");}catch(e){} if(iWon && HP_phase==="over")zzWin("hippo-"+HP_diff,true);},180);
   return `
 <div class="fade" style="padding-top:40px;text-align:center">${ZZ_HOMEBTN}
   <div style="font-size:64px;margin-bottom:6px">${emoji}</div>
@@ -4569,6 +4571,7 @@ function HP_scrOver(){
 
 // ── entry / lifecycle ──
 function HP_start(mode,diff){
+  try{zzCelebrationClear();}catch(e){}
   HP_teardown();
   HP_mode=mode; if(diff)HP_diff=diff;
   HP_pellets=[]; HP_puffs=[]; HP_winner=null;
@@ -4858,7 +4861,7 @@ function SK2_scrGame(){
 
 function SK2_scrOver(){
   const rec=SK2_recordPending;
-  setTimeout(()=>{try{playSfx(rec?"win":"fool");}catch(e){} if(rec)try{zzWin("sky2-rec",true);}catch(e){}},160);
+  setTimeout(()=>{try{playSfx(rec?"win":"fool");}catch(e){} if(rec && SK2_phase==="over")try{zzWin("sky2-rec",true);}catch(e){}},160);
   const recordInput = rec
     ? `<div class="card" style="margin:18px 0"><span class="lbl">New platform record! Add your name</span>
          <div class="row"><input class="inp" id="sk2-name" placeholder="Your name" maxlength="18" value="${(myName||'').replace(/"/g,'')}" style="flex:1;border-color:#FFD23F">
@@ -4881,6 +4884,7 @@ function SK2_scrOver(){
 
 // ── lifecycle ──
 function SK2_start(){
+  try{zzCelebrationClear();}catch(e){}
   SK2_teardown();
   SK2_blocks=[]; SK2_fallers=[]; SK2_drop=null; SK2_score=0; SK2_floors=0; SK2_combo=0;
   SK2_floorInBldg=0; SK2_palIdx=0; SK2_scrollDisp=0; SK2_msg=""; SK2_recordPending=false;
@@ -5221,7 +5225,7 @@ function MZ_scrGame(){
 </div>`;}
 function MZ_scrOver(){
   const rec=MZ_recordPending;
-  setTimeout(()=>{try{playSfx(rec?"win":"fool");}catch(e){} if(rec)try{zzWin("muncher-rec",true);}catch(e){}},160);
+  setTimeout(()=>{try{playSfx(rec?"win":"fool");}catch(e){} if(rec && MZ_phase==="over")try{zzWin("muncher-rec",true);}catch(e){}},160);
   const recordInput = rec
     ? `<div class="card" style="margin:18px 0"><span class="lbl">New platform record! Add your name</span>
          <div class="row"><input class="inp" id="mz-name" placeholder="Your name" maxlength="18" value="${(myName||'').replace(/"/g,'')}" style="flex:1;border-color:#FFD23F">
@@ -5243,6 +5247,7 @@ function MZ_scrOver(){
 
 // ── lifecycle ──
 function MZ_start(){
+  try{zzCelebrationClear();}catch(e){}
   MZ_teardown();
   MZ_score=0; MZ_lives=3; MZ_level=1; MZ_time=0; MZ_recordPending=false;
   MZ_phase="play"; MZ_startLevel(); render();
@@ -5519,7 +5524,7 @@ function DR_scrGame(){
 </div>`;}
 function DR_scrOver(){
   const rec=DR_recordPending;
-  setTimeout(()=>{try{playSfx(rec?"win":"fool");}catch(e){} if(rec)try{zzWin("dino-rec",true);}catch(e){}},160);
+  setTimeout(()=>{try{playSfx(rec?"win":"fool");}catch(e){} if(rec && DR_phase==="over")try{zzWin("dino-rec",true);}catch(e){}},160);
   const recordInput = rec
     ? `<div class="card" style="margin:18px 0"><span class="lbl">New platform record! Add your name</span>
          <div class="row"><input class="inp" id="dr-name" placeholder="Your name" maxlength="18" value="${(myName||'').replace(/"/g,'')}" style="flex:1;border-color:#FFD23F">
@@ -5540,7 +5545,7 @@ function DR_scrOver(){
 </div>`;}
 
 // ── lifecycle ──
-function DR_start(){ DR_teardown(); DR_resetRun(); DR_phase="play"; DR_startAt=ms(); render(); }
+function DR_start(){ try{zzCelebrationClear();}catch(e){} DR_teardown(); DR_resetRun(); DR_phase="play"; DR_startAt=ms(); render(); }
 function DR_teardown(){
   if(DR_raf){cancelAnimationFrame(DR_raf);DR_raf=null;}
   if(DR_keyDown){document.removeEventListener("keydown",DR_keyDown);DR_keyDown=null;}
