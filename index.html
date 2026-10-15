@@ -5313,7 +5313,7 @@ let DR_cv=null, DR_ctx=null, DR_raf=null, DR_last=0, DR_dpr=1;
 let DR_W=600, DR_H=220, DR_GROUND=186;
 let DR_dist=0, DR_score=0, DR_best=0, DR_hs={score:0,name:""}, DR_recordPending=false;
 let DR_y=0, DR_vy=0, DR_onGround=true, DR_duck=false, DR_run=0, DR_jumps=0;
-let DR_obs=[], DR_nextGap=0, DR_speed=330, DR_night=false, DR_flash=0;
+let DR_obs=[], DR_nextGap=0, DR_speed=330, DR_night=false, DR_flash=0, DR_lastType="short";
 let DR_keyDown=null, DR_keyUp=null, DR_startAt=0;
 const DR_G=2600, DR_JUMP1=700, DR_JUMP2=660, DR_X=48;
 
@@ -5336,12 +5336,12 @@ function DR_setDuck(on){ if(DR_phase==="play") DR_duck=on && DR_onGround; }
 
 function DR_spawn(){
   const r=Math.random();
-  if(DR_score>150 && r<0.28){ DR_obs.push({type:"bird", x:DR_W+20, w:34, h:20, y:DR_GROUND-56, flap:0}); }
+  if(DR_score>150 && r<0.28){ DR_obs.push({type:"bird", x:DR_W+20, w:34, h:20, y:DR_GROUND-56, flap:0}); DR_lastType="bird"; }
   else if(DR_score>70 && r<0.56){                 // TALL obstacle → needs a double jump
     const h=96+((Math.random()*34)|0), w=20+((Math.random()*8)|0);
-    DR_obs.push({type:"cactus", x:DR_W+20, w, h, y:DR_GROUND-h, bumps:3, tall:true}); }
+    DR_obs.push({type:"cactus", x:DR_W+20, w, h, y:DR_GROUND-h, bumps:3, tall:true}); DR_lastType="tall"; }
   else { const n=1+((Math.random()*3)|0); const w=12+n*7, h=24+((Math.random()*30)|0);
-    DR_obs.push({type:"cactus", x:DR_W+20, w, h, y:DR_GROUND-h, bumps:n}); }
+    DR_obs.push({type:"cactus", x:DR_W+20, w, h, y:DR_GROUND-h, bumps:n}); DR_lastType="short"; }
 }
 function DR_box(){ const h=DR_duck?22:40, w=DR_duck?46:34, by=DR_GROUND-DR_y;
   return {x:DR_X, y:by-h, w, h}; }
@@ -5349,7 +5349,7 @@ function DR_hit(a,b){ return a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.
 
 function DR_step(dt){
   DR_run+=dt* DR_speed*0.06;
-  DR_speed=Math.min(1200, 320 + DR_dist*0.0008);   // keeps ramping up for a long time
+  DR_speed=Math.min(1400, 440 + DR_dist*0.0012);   // faster, and keeps ramping
   DR_dist+=DR_speed*dt;
   const ns=Math.floor(DR_dist/16);
   if(ns>DR_score && ns%100===0) DR_sfx("point");
@@ -5363,9 +5363,14 @@ function DR_step(dt){
   DR_obs=DR_obs.filter(o=>o.x+o.w>-10);
   DR_nextGap-=DR_speed*dt;
   if(DR_nextGap<=0){ DR_spawn();
-    // gap grows with distance (and always leaves room to land a double jump at speed)
-    const base=Math.max(DR_speed*0.85, 260) + Math.min(650, DR_dist*0.013);
-    DR_nextGap=base+Math.random()*220; }
+    // Random spacing — never predictable. Minimum scales with speed so you can
+    // always land the jump for what was just spawned (jump air distance ≈ speed×0.54,
+    // double-jump ≈ speed×0.9); beyond that it's random, so obstacles sometimes
+    // cluster close and sometimes spread out.
+    const minG = DR_lastType==="tall" ? DR_speed*0.98+70 : DR_speed*0.64+50;
+    const spread = DR_speed*1.3;
+    const close = Math.random()<0.4;                    // ~40% of the time keep it tight
+    DR_nextGap = Math.max(120, minG + Math.random()*(close?spread*0.28:spread)); }
   // collision
   const pb=DR_box();
   for(const o of DR_obs){ if(DR_hit(pb,{x:o.x,y:o.y,w:o.w,h:o.h})){ DR_over(); return; } }
